@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="only light">
+  <title>Global Hackathon, Kaggle &amp; NASA Space Apps Command Center ($773,500+ Active Pools + $1M+ Grants)</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --paper: #f5f2ea;
+      --card: #fcfbf7;
+      --card-alt: #eee9dd;
+      --code-bg: #efeae0;
+      --ink: #141310;
+      --muted: #55524a;
+      --line: #d6cfc2;
+      --teal: #1b6b52;
+      --teal-soft: #e6f3ee;
+      --blue: #1d5bbf;
+      --blue-soft: #e8f0fc;
+      --plum: #5c2d91;
+      --plum-soft: #f2ecfb;
+      --amber: #9a5b13;
+      --amber-soft: #fbf1e2;
+      --crimson: #9e2f2f;
+      --crimson-soft: #fbeaea;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.54;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 24px 22px 68px; }
+    .topnav {
+      display: flex; flex-wrap: wrap; gap: 7px; align-items: center;
+      justify-content: space-between; padding-bottom: 14px;
+      border-bottom: 1px solid var(--line); margin-bottom: 20px;
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 7px; }
+    .nav-pill {
+      display: inline-block; padding: 5px 11px; border-radius: 999px;
+      font-size: 12.4px; font-weight: 600; background: var(--card);
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .nav-pill.active {
+      background: var(--teal-soft); border-color: var(--teal); color: var(--teal); font-weight: 700;
+    }
+    .eyebrow {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      background: var(--teal-soft); border: 1px solid #b6decb;
+      color: var(--teal); font-size: 11.8px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    h1 {
+      font-family: var(--serif); font-size: clamp(27px, 3.1vw, 39px);
+      line-height: 1.15; margin: 2px 0 10px; letter-spacing: -0.015em; color: var(--ink);
+    }
+    h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 6px; color: var(--ink); }
+    h3 { font-size: 15.5px; margin: 0 0 6px; color: var(--ink); }
+    .lede { font-size: 16px; color: var(--muted); max-width: 1080px; margin: 0 0 18px; }
+    .kpi-strip {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 11px; margin-bottom: 22px;
+    }
+    @media (max-width: 1060px) { .kpi-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .kpi-strip { grid-template-columns: 1fr; } }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 13px 15px;
+    }
+    .kpi .val { font-size: 21px; font-weight: 800; color: var(--teal); font-family: var(--mono); }
+    .kpi .lbl { font-size: 12.2px; color: var(--muted); margin-top: 4px; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;
+    }
+    .sec-head {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: flex-start; gap: 10px; margin-bottom: 14px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--line);
+    }
+    .sec-sub { font-size: 14px; color: var(--muted); margin: 2px 0 0; max-width: 940px; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+    button, .btn {
+      appearance: none; border: 1px solid var(--line); background: var(--card-alt);
+      color: var(--ink); font-family: var(--sans); font-size: 12.4px; font-weight: 600;
+      padding: 6px 11px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+    }
+    button:hover, .btn:hover { background: #e3ddd0; text-decoration: none; }
+    button.active, .btn-primary {
+      background: var(--teal); border-color: var(--teal); color: #fcfbf7;
+    }
+    button.active:hover, .btn-primary:hover { background: #155540; color: #fcfbf7; }
+    .btn-blue.active, .btn-blue {
+      background: var(--blue); border-color: var(--blue); color: #fcfbf7;
+    }
+    code {
+      font-family: var(--mono); font-size: 12px; background: var(--code-bg);
+      color: var(--ink); padding: 1px 6px; border-radius: 5px;
+    }
+    pre {
+      margin: 0; background: var(--code-bg); color: var(--ink);
+      border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px;
+      font-family: var(--mono); font-size: 12px; line-height: 1.46;
+      overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+    }
+    input[type="text"], select {
+      padding: 7px 11px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--card); color: var(--ink); font-size: 13px; font-family: var(--sans);
+    }
+    .filter-bar {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 10px; margin-bottom: 12px;
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 10px; padding: 10px 12px;
+    }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 10px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th {
+      background: var(--card-alt); color: var(--ink); font-weight: 700;
+      font-size: 11.3px; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; font-family: var(--mono);
+      background: var(--teal-soft); color: var(--teal); border: 1px solid #b8decb;
+      white-space: nowrap;
+    }
+    .badge.blue { background: var(--blue-soft); color: var(--blue); border-color: #bdd3f7; }
+    .badge.plum { background: var(--plum-soft); color: var(--plum); border-color: #d6c5f0; }
+    .badge.amber { background: var(--amber-soft); color: var(--amber); border-color: #e4c696; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 960px) { .grid-2 { grid-template-columns: 1fr; } }
+    .panel {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 11px; padding: 14px 15px;
+    }
+    .chip-grid {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; margin-bottom: 12px;
+    }
+    .award-chip {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px;
+      background: var(--card); border: 1px solid var(--line); color: var(--ink); cursor: pointer;
+    }
+    .award-chip.active {
+      background: var(--plum-soft); border-color: var(--plum); color: var(--plum); font-weight: 700;
+    }
+    .chal-card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 9px;
+      padding: 9px 11px; margin-bottom: 7px; cursor: pointer;
+    }
+    .chal-card.active {
+      border: 2px solid var(--teal); background: var(--teal-soft);
+    }
+    .footer {
+      margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 12.8px; color: var(--muted); display: flex; flex-wrap: wrap;
+      justify-content: space-between; gap: 10px;
+    }
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; background: var(--teal);
+      color: #fcfbf7; padding: 9px 15px; border-radius: 8px; font-size: 13px;
+      font-weight: 700; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 50;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topnav">
+      <div class="nav-links">
+        <a class="nav-pill" href="index.html">Research Portal</a>
+        <a class="nav-pill" href="omninode-universal-shell.html">OmniNode Universal Shell</a>
+        <a class="nav-pill" href="latent-mind-microscope.html">Latent Mind Microscope</a>
+        <a class="nav-pill" href="cybernetic-hypergrid-studio.html">9-Runtime HyperGrid Studio</a>
+        <a class="nav-pill" href="benchmark-and-rebuild-observatory.html">Observatory &amp; Continuum</a>
+        <a class="nav-pill active" href="global-hackathon-command-center.html">Global Hackathon Center ($773k+)</a>
+        <a class="nav-pill" href="pactguard-paypal-studio.html">PactGuard Escrow</a>
+        <a class="nav-pill" href="ugos-nas-vaultloom.html">UGOS VaultLoom</a>
+        <a class="nav-pill" href="hermes-submission.html">Hermes Submission (PR #151420)</a>
+      </div>
+      <div class="btn-row">
+        <a class="nav-pill" href="https://github.com/aidonerightcorp/omninode-edge-fusion" target="_blank" rel="noopener">omninode-edge-fusion &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="eyebrow">Unified Parameterized Portfolio &middot; One OmniNode Shell Across Agentic, Edge, RTOS, Aerospace &amp; Safety Arenas</div>
+    <h1>Global Hackathon, NASA Space Apps &amp; Mechanistic Grant Command Center</h1>
+    <p class="lede">
+      Instead of bespoke one-off prototypes, every arena below is powered by the same parameterized <strong><code>OmniNode</code> Universal Shell</strong> (static AST <code>CARD</code> bricks, <code>0</code>-search <code>.omni/cas</code> lockfile pinning, canonical <code>grid/1</code> cell digests, and <code>&gt;&gt; // | @</code> algebraic composition) compiled to <code>9</code> zero-dependency targets (<code>.wasm</code>, <code>WGSL</code>, <code>GLSL</code>, <code>Rust #![no_std]</code>, <code>ISO C99</code>, <code>SQL</code>, <code>JS</code>, <code>Python</code>, and <code>.safetensors</code>).
+    </p>
+
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="val">$773,500+</div>
+        <div class="lbl">Combined active hackathon &amp; paid Kaggle prize pools mapped to live <code>aidonerightcorp</code> artifacts</div>
+      </div>
+      <div class="kpi">
+        <div class="val">4 Live Now</div>
+        <div class="lbl">Hermes (<code>PR #151420/#151989</code>), PayPal PactGuard, Gemma-4 Paper + Kaggle, and UGREEN VaultLoom</div>
+      </div>
+      <div class="kpi">
+        <div class="val">Nov 14&ndash;15</div>
+        <div class="lbl">2026 NASA Space Apps Weekend &middot; <code>10</code> Global Awards &middot; <code>omninode-edge-fusion</code> sensor sheaf</div>
+      </div>
+      <div class="kpi">
+        <div class="val">$1,000,000+</div>
+        <div class="lbl">Non-dilutive safety &amp; mechanistic interpretability grants (<code>NSF 26-510</code>, <code>AI Grant</code>, <code>MATS</code>, <code>ARIA</code>)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">1 Shell &rarr; 9 Targets</div>
+        <div class="lbl">Zero third-party runtime lock-in across browser, NAS, RTOS microkernel, MCP &amp; spacecraft edge</div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: Filterable & Sortable Matrix -->
+    <section id="sec-matrix">
+      <div class="sec-head">
+        <div>
+          <h2>1. Interactive Opportunity &amp; Artifact Matrix (<code>$773,500+</code> Cash Pools + NASA Space Apps + <code>$1M+</code> Grants)</h2>
+          <p class="sec-sub">
+            Filter by track, search by technical primitive (<code>sheaf</code>, <code>wasm</code>, <code>no_std</code>, <code>SAE</code>, <code>Koopman</code>, <code>escrow</code>), or sort by deadline and prize pool.
+          </p>
+        </div>
+        <div class="badge" id="visibleCountBadge">Showing 11 / 11 Tracks</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="btn-row" id="catFilterRow">
+          <button type="button" class="active" onclick="setCatFilter('all', this)">All Tracks (11)</button>
+          <button type="button" onclick="setCatFilter('live_now', this)">Live &amp; Ready (Nov 11&ndash;16)</button>
+          <button type="button" onclick="setCatFilter('nasa', this)">NASA Space Apps (Nov 14&ndash;15)</button>
+          <button type="button" onclick="setCatFilter('upcoming', this)">Nov&ndash;Dec Hackathons</button>
+          <button type="button" onclick="setCatFilter('kaggle', this)">Paid Kaggle ($350k+)</button>
+          <button type="button" onclick="setCatFilter('grants', this)">Safety Grants ($1M+)</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="searchInput" placeholder="Search arena, primitive, repo..." oninput="renderMatrix()" style="min-width:220px;">
+          <select id="sortSelect" onchange="renderMatrix()">
+            <option value="date">Sort by Deadline (Soonest First)</option>
+            <option value="prize">Sort by Pool Size (Highest First)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Arena / Program</th>
+              <th>Pool / Award</th>
+              <th>Deadline</th>
+              <th>Status</th>
+              <th>OmniNode-Encased Architecture &amp; Live Artifacts</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Interactive NASA Space Apps 10 Global Awards & Challenge Mapper -->
+    <section id="sec-nasa">
+      <div class="sec-head">
+        <div>
+          <h2>2. Interactive 2026 NASA Space Apps Mapper (<code>Nov 14&ndash;15, 2026</code> &middot; 10 Global Awards &times; 5 Challenges)</h2>
+          <p class="sec-sub">
+            Select any of the <strong>5 flagship Earth &amp; space challenges</strong> and any of the <strong>10 official NASA Global Award categories</strong> to synthesize the exact <code>aidonerightcorp/omninode-edge-fusion</code> declarative <code>shape</code> pipeline (<code>&gt;&gt; // | @</code>) and canonical <code>grid/1</code> configuration cell.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-primary" onclick="copyNasaSpec()">Copy NASA OmniNode Spec</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>A. Choose 2026 Space Apps Technical Challenge</h3>
+          <div id="nasaChallengeList" style="margin-top:8px;"></div>
+
+          <h3 style="margin-top:14px;">B. Align With Official NASA Global Award Category (10 Awards)</h3>
+          <div class="chip-grid" id="nasaAwardChips"></div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+            <h3 id="nasaOutTitle">Synthesized <code>omninode-edge-fusion</code> Pipeline</h3>
+            <span class="badge plum" id="nasaCellBadge">cell: --</span>
+          </div>
+          <p id="nasaNarrative" style="font-size:13.2px;color:var(--muted);margin:0 0 10px;"></p>
+
+          <div style="font-size:12px;font-weight:700;margin-bottom:5px;">Declarative <code>shape.composition</code> (<code>&gt;&gt; // | @</code>):</div>
+          <pre id="nasaShapePre" style="margin-bottom:10px;"></pre>
+
+          <div style="font-size:12px;font-weight:700;margin-bottom:5px;">Canonical <code>grid/1</code> Sensor-Fusion Cell Record:</div>
+          <pre id="nasaGridPre" style="max-height:255px;"></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>
+        <strong>AI Done Right Corp</strong> &middot; Parameterized <code>OmniNode</code> Portfolio Command Center
+      </div>
+      <div>
+        <a href="index.html">Portal</a> &middot;
+        <a href="omninode-universal-shell.html">OmniNode Shell</a> &middot;
+        <a href="latent-mind-microscope.html">Latent Mind Microscope</a> &middot;
+        <a href="hermes-submission.html">Hermes Submission (PR #151420)</a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const ARENAS = [
+      {
+        name: "Nous Research Hermes Plugin Hackathon",
+        cat: "live_now",
+        poolLabel: "$20,000",
+        poolNum: 20000,
+        dueLabel: "Nov 11, 2026 (5:00 PM EST)",
+        sortOrder: 1,
+        statusBadge: "LIVE PR #151420 + #151989",
+        badgeClass: "",
+        desc: "OmniNode-encased Continuum v1.3.0 (5 Hermes surfaces, 30 engines, 18 tools, 84.3s 1080p30 video) + companion omni-fabric-runtime v0.6.0.",
+        links: [
+          { label: "Submission Brief & Q1-Q6 Kit", href: "hermes-submission.html" },
+          { label: "PR #151420", href: "https://github.com/NousResearch/hermes-agent/pull/151420" },
+          { label: "PR #151989", href: "https://github.com/NousResearch/hermes-agent/pull/151989" }
+        ]
+      },
+      {
+        name: "PayPal AI Agent Hackathon",
+        cat: "live_now",
+        poolLabel: "$67,500",
+        poolNum: 67500,
+        dueLabel: "Nov 12, 2026",
+        sortOrder: 2,
+        statusBadge: "LIVE v1.0.0 + STUDIO",
+        badgeClass: "",
+        desc: "aidonerightcorp/pactguard-escrow v1.0.0: ASD-STE100 milestone decomposition, 1.0000 AUROC sheaf dispute localization, 569 B .wasm conformal fraud gate & Shapley payouts.",
+        links: [
+          { label: "PactGuard Studio", href: "pactguard-paypal-studio.html" },
+          { label: "GitHub Repo", href: "https://github.com/aidonerightcorp/pactguard-escrow" }
+        ]
+      },
+      {
+        name: "Google Gemma-4 Developer Agent & Paper",
+        cat: "live_now",
+        poolLabel: "$110,000 ($75k + $35k)",
+        poolNum: 110000,
+        dueLabel: "Nov 12, 2026 (Paper)",
+        sortOrder: 3,
+        statusBadge: "LIVE KAGGLE + 4-PAGE PDF",
+        badgeClass: "",
+        desc: "Anisotropic subspace & hub-avoiding code-graph navigation lifting Gemma-4 localization MRR@10 13.6x (0.0564 -> 0.7643) across 4 repositories.",
+        links: [
+          { label: "4-Page Paper PDF", href: "assets/gemma4_anisotropic_subspace_paper.pdf" },
+          { label: "Empirical Observatory", href: "benchmark-and-rebuild-observatory.html" }
+        ]
+      },
+      {
+        name: "2026 NASA Space Apps Challenge",
+        cat: "nasa",
+        poolLabel: "10 Global Awards + NASA Launch",
+        poolNum: 45000,
+        dueLabel: "Nov 14-15, 2026 (THIS WEEKEND)",
+        sortOrder: 4,
+        statusBadge: "READY · omninode-edge-fusion",
+        badgeClass: "plum",
+        desc: "aidonerightcorp/omninode-edge-fusion: Spatiotemporal Cellular Sheaf + Koopman DMD eigenmodes + Adaptive Conformal Inference (ACI) sensor fusion compiled to .wasm/C99/Rust.",
+        links: [
+          { label: "Interactive Mapper Below", href: "#sec-nasa" },
+          { label: "omninode-edge-fusion", href: "https://github.com/aidonerightcorp/omninode-edge-fusion" }
+        ]
+      },
+      {
+        name: "UGREEN AI NAS Hackathon",
+        cat: "live_now",
+        poolLabel: "$46,000",
+        poolNum: 46000,
+        dueLabel: "Nov 16, 2026 (Round 1)",
+        sortOrder: 5,
+        statusBadge: "LIVE v1.0.0 + ZIP + PDF",
+        badgeClass: "",
+        desc: "aidonerightcorp/ugos-vaultloom v1.0.0: 24-d Procrustes vault (-97.66% vector RAM: 96 MB / 1M files), 0-reindex encoder swap, 256 B .wasm triage & DP-Woodbury personalization.",
+        links: [
+          { label: "UGOS VaultLoom Studio", href: "ugos-nas-vaultloom.html" },
+          { label: "6-Page Proposal PDF", href: "assets/ugos_vaultloom_proposal.pdf" },
+          { label: "GitHub Repo", href: "https://github.com/aidonerightcorp/ugos-vaultloom" }
+        ]
+      },
+      {
+        name: "Google #BuildHybridAI",
+        cat: "upcoming",
+        poolLabel: "$30,000",
+        poolNum: 30000,
+        dueLabel: "Nov 30, 2026",
+        sortOrder: 6,
+        statusBadge: "OMNINODE CASCADE READY",
+        badgeClass: "blue",
+        desc: "Browser-local .wasm + WebGPU WGSL Matryoshka prefix slicer (16d -> 256d, 89.19% Layer-1 exit) paired with split-conformal remote escalation cascade.",
+        links: [
+          { label: "9-Runtime HyperGrid Studio", href: "cybernetic-hypergrid-studio.html" },
+          { label: "OmniNode Shell Lab", href: "omninode-universal-shell.html" }
+        ]
+      },
+      {
+        name: "Kiro Kiroween (AWS & Kiro)",
+        cat: "upcoming",
+        poolLabel: "$100,000",
+        poolNum: 100000,
+        dueLabel: "Dec 4, 2026",
+        sortOrder: 7,
+        statusBadge: "GAP-LOOP + ELK READY",
+        badgeClass: "blue",
+        desc: "Spec-to-checked-CARD OmniNode gap-loop synthesizer (admitting built_<cap>.py only after frozen hidden invariants pass) guarded by <1.4 us ELK sycophancy firewall.",
+        links: [
+          { label: "OmniNode gap-loop Simulator", href: "omninode-universal-shell.html#sec-cas" },
+          { label: "Latent Mind Microscope", href: "latent-mind-microscope.html" }
+        ]
+      },
+      {
+        name: "QNX Global Hackathon (QNX SDP 8.0 RTOS)",
+        cat: "upcoming",
+        poolLabel: "$50,000+",
+        poolNum: 50000,
+        dueLabel: "Dec 15, 2026",
+        sortOrder: 8,
+        statusBadge: "C99 + #![no_std] READY",
+        badgeClass: "blue",
+        desc: "Zero-heap -Werror ISO C99 + Rust #![no_std] deterministic microkernel safety guard (<15 us WCET) emitted directly from OmniNode grid/1 cells.",
+        links: [
+          { label: "C99 & Rust #![no_std] Emitter", href: "omninode-universal-shell.html#sec-exporter" }
+        ]
+      },
+      {
+        name: "Atlassian Codegeist 2026 (Best MCP App + Rovo)",
+        cat: "upcoming",
+        poolLabel: "$120,000",
+        poolNum: 120000,
+        dueLabel: "Dec 22, 2026",
+        sortOrder: 9,
+        statusBadge: "SHEAF + CAS MCP READY",
+        badgeClass: "blue",
+        desc: "Cross-spec cellular sheaf contradiction detector across Jira/Confluence specs paired with SQLite WAL CAS lease_epoch multi-agent MCP server.",
+        links: [
+          { label: "Omni-Fabric MCP Suite", href: "omni-fabric.html" },
+          { label: "OmniNode Universal Shell", href: "omninode-universal-shell.html" }
+        ]
+      },
+      {
+        name: "Active Paid Kaggle Competitions (5 Live Tracks)",
+        cat: "kaggle",
+        poolLabel: "$350,000+",
+        poolNum: 350000,
+        dueLabel: "Rolling Nov 2026 - Jan 2027",
+        sortOrder: 10,
+        statusBadge: "ACTIVE SUBMISSIONS + 15+ NOTEBOOKS",
+        badgeClass: "amber",
+        desc: "google-quantum ($150k), nfl-bdb-2027 ($100k), name-that-llm ($50k: 40.11% Topic-Nullspace Woodbury ensemble on 18 LLMs), squares-in-squares ($50k), enveda-CASMI26 ($50k).",
+        links: [
+          { label: "Kaggle Leaderboard Observatory", href: "benchmark-and-rebuild-observatory.html" }
+        ]
+      },
+      {
+        name: "Safety & Mech-Interp Non-Dilutive Grants",
+        cat: "grants",
+        poolLabel: "$1,000,000+",
+        poolNum: 1000000,
+        dueLabel: "Rolling Q4 2026 / Q1 2027",
+        sortOrder: 11,
+        statusBadge: "LATENT-PRISM + PAPER PACK",
+        badgeClass: "plum",
+        desc: "NSF 26-510 ($305k), AI Grant ($250k), MATS, Open Philanthropy, and ARIA Safeguarded AI backed by aidonerightcorp/latent-prism v1.0.0 and 8-page monograph.",
+        links: [
+          { label: "Latent Mind Microscope", href: "latent-mind-microscope.html" },
+          { label: "8-Page Monograph PDF", href: "paper-atomic-weight-space.html" }
+        ]
+      }
+    ];
+
+    const NASA_CHALLENGES = [
+      {
+        id: "nisar_sar",
+        title: "1. Dancing with the SARs / NISAR",
+        domain: "L/S-Band Radar Interferometry",
+        primaryBricks: ["nisar_phase_ingest", "sheaf_unwrap_consistency", "koopman_subsidence_dmd"],
+        fallbackBrick: "robust_huber_unwrap",
+        summary: "Fuses dual-frequency L-band and S-band dual-band radar interferograms using cellular sheaf coboundary residuals to pinpoint phase-unwrapping tears and Koopman DMD eigenmodes to forecast millimeter-scale surface deformation."
+      },
+      {
+        id: "earth_trend",
+        title: "2. Earth System Trend Detective",
+        domain: "Multi-Decadal Climate & Ocean Coupling",
+        primaryBricks: ["era5_modis_align", "platonic_procrustes_bridge", "koopman_regime_detector"],
+        fallbackBrick: "woodbury_rls_trend",
+        summary: "Aligns multi-mission satellite series into a shared Procrustes manifold with 0 re-indexing, decomposes slow-fast climate modes via Koopman operators, and bounds structural breaks with Adaptive Conformal Inference (ACI)."
+      },
+      {
+        id: "modis_viirs_fire",
+        title: "3. MODIS + VIIRS Hot Spots",
+        domain: "Cross-Orbit Wildfire & Thermal Triage",
+        primaryBricks: ["modis_viirs_parallax", "sheaf_plume_reconcile", "aci_conformal_hotspot"],
+        fallbackBrick: "threshold_radiance_rule",
+        summary: "Reconciles viewing-angle parallax and cloud-edge false positives across Aqua/Terra MODIS and Suomi-NPP VIIRS swaths, compiling a 590-byte .wasm / #![no_std] edge alert kernel for bandwidth-starved field stations."
+      },
+      {
+        id: "flame_freefall",
+        title: "4. Flame in Freefall",
+        domain: "ISS Microgravity Spherical Cool-Flame Dynamics",
+        primaryBricks: ["droplet_radiance_profiler", "liquid_ssm_kinetics", "hyperlora_kronecker_surrogate"],
+        fallbackBrick: "ode_rk4_integrator",
+        summary: "Models microgravity soot-free cool-flame oscillations via continuous-time Liquid state-space dynamics and 256-byte Kronecker parameter cartridges across varying oxygen/diluent mixtures."
+      },
+      {
+        id: "lunar_navigator",
+        title: "5. Lunar Landing Site Navigator",
+        domain: "LRO Hazard Sheaf & Autonomous Descent Gate",
+        primaryBricks: ["lro_dem_slope_ingest", "solar_illumination_sheaf", "c99_wcet_descent_gate"],
+        fallbackBrick: "conservative_ellipse_mask",
+        summary: "Combines Lunar Reconnaissance Orbiter (LRO) Diviner thermal stability, Lola slope gradients, and boulder shadow maps into a <15 us ISO C99 / Rust #![no_std] landing safety gate."
+      }
+    ];
+
+    const NASA_AWARDS = [
+      { id: "science", label: "Best Use of Science", focus: "koopman_spectral_conservation", alpha: 0.05 },
+      { id: "data", label: "Best Use of Data", focus: "multi_sensor_procrustes_fusion", alpha: 0.06 },
+      { id: "tech", label: "Best Use of Technology", focus: "wasm_wgsl_nostd_9target_export", alpha: 0.05 },
+      { id: "galactic", label: "Galactic Impact", focus: "planetary_scale_early_warning", alpha: 0.04 },
+      { id: "mission", label: "Best Mission Concept", focus: "autonomous_onboard_rtos_gate", alpha: 0.03 },
+      { id: "inspire", label: "Most Inspirational", focus: "open_zero_apikey_citizen_lab", alpha: 0.08 },
+      { id: "story", label: "Best Storytelling", focus: "interactive_paper_ink_explainer", alpha: 0.08 },
+      { id: "connect", label: "Global Connection", focus: "offline_bundle_lockfile_sync", alpha: 0.07 },
+      { id: "art_tech", label: "Art & Technology", focus: "isometric_sheaf_field_canvas", alpha: 0.09 },
+      { id: "local", label: "Local Impact", focus: "municipality_256B_wasm_alert", alpha: 0.05 }
+    ];
+
+    let activeCat = "all";
+    let activeChallengeIdx = 0;
+    let activeAwardIdx = 0;
+
+    function simpleDigest12(str) {
+      let h1 = 0x811c9dc5, h2 = 0x01000193;
+      for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+        h2 = Math.imul(h2 ^ (c + i), 0x85ebca6b) >>> 0;
+      }
+      return h1.toString(16).padStart(8, "0") + h2.toString(16).padStart(8, "0").slice(0, 4);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 1900);
+    }
+
+    function setCatFilter(cat, btn) {
+      activeCat = cat;
+      document.querySelectorAll("#catFilterRow button").forEach((b) => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      renderMatrix();
+    }
+
+    function renderMatrix() {
+      const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+      const sortBy = document.getElementById("sortSelect").value;
+
+      let rows = ARENAS.filter((a) => {
+        if (activeCat !== "all" && a.cat !== activeCat) return false;
+        if (!q) return true;
+        return (a.name + " " + a.desc + " " + a.poolLabel + " " + a.dueLabel).toLowerCase().includes(q);
+      });
+
+      if (sortBy === "prize") {
+        rows.sort((a, b) => b.poolNum - a.poolNum);
+      } else {
+        rows.sort((a, b) => a.sortOrder - b.sortOrder);
+      }
+
+      document.getElementById("visibleCountBadge").textContent = `Showing ${rows.length} / ${ARENAS.length} Tracks`;
+      const tbody = document.getElementById("matrixBody");
+      tbody.innerHTML = "";
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        const linksHtml = r.links.map((l) => `<a class="btn" style="padding:3px 9px;font-size:11.6px;" href="${l.href}">${l.label} &rarr;</a>`).join(" ");
+        tr.innerHTML = `
+          <td style="font-weight:700;width:19%;">${r.name}</td>
+          <td style="font-family:var(--mono);font-weight:700;color:var(--teal);width:13%;">${r.poolLabel}</td>
+          <td style="font-family:var(--mono);font-size:12px;width:14%;">${r.dueLabel}</td>
+          <td style="width:16%;"><span class="badge ${r.badgeClass}">${r.statusBadge}</span></td>
+          <td style="width:38%;">
+            <div style="margin-bottom:6px;color:var(--muted);">${r.desc}</div>
+            <div class="btn-row">${linksHtml}</div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderNasaMapper() {
+      const chalBox = document.getElementById("nasaChallengeList");
+      chalBox.innerHTML = "";
+      NASA_CHALLENGES.forEach((c, idx) => {
+        const div = document.createElement("div");
+        div.className = "chal-card" + (idx === activeChallengeIdx ? " active" : "");
+        div.innerHTML = `<div style="font-weight:700;font-size:13.3px;">${c.title}</div><div style="font-size:11.8px;color:var(--muted);">${c.domain}</div>`;
+        div.onclick = () => {
+          activeChallengeIdx = idx;
+          renderNasaMapper();
+        };
+        chalBox.appendChild(div);
+      });
+
+      const awardBox = document.getElementById("nasaAwardChips");
+      awardBox.innerHTML = "";
+      NASA_AWARDS.forEach((aw, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "award-chip" + (idx === activeAwardIdx ? " active" : "");
+        b.textContent = `${idx + 1}. ${aw.label}`;
+        b.onclick = () => {
+          activeAwardIdx = idx;
+          renderNasaMapper();
+        };
+        awardBox.appendChild(b);
+      });
+
+      const ch = NASA_CHALLENGES[activeChallengeIdx];
+      const aw = NASA_AWARDS[activeAwardIdx];
+      const shapeExpr = `${ch.primaryBricks[0]} >> (${ch.primaryBricks[1]} | ${ch.primaryBricks[2]}) >> (${aw.focus} // ${ch.fallbackBrick}) >> portable_9runtime_exporter @ independent_quorum_check`;
+
+      const gridObj = {
+        format: "grid/1",
+        kind: "space-apps-edge-fusion",
+        source: "aidonerightcorp/omninode-edge-fusion",
+        challenge_id: ch.id,
+        global_award_target: aw.label,
+        config: {
+          conformal_alpha: aw.alpha,
+          dmd_rank: 8,
+          maker_is_not_checker: true,
+          primary_focus: aw.focus,
+          runtime_targets: ["wasm_simd", "wgsl_webgpu", "c99_iso", "rust_no_std"],
+          sheaf_obstruction_gate: true
+        }
+      };
+      const cellTag = simpleDigest12(JSON.stringify(gridObj));
+      document.getElementById("nasaOutTitle").textContent = `${ch.title} × ${aw.label}`;
+      document.getElementById("nasaCellBadge").textContent = `cell: ${cellTag.slice(0, 8)}`;
+      document.getElementById("nasaNarrative").textContent = ch.summary;
+      document.getElementById("nasaShapePre").textContent = shapeExpr;
+      document.getElementById("nasaGridPre").textContent = JSON.stringify(gridObj, null, 2);
+    }
+
+    function copyNasaSpec() {
+      const payload =
+        `# NASA Space Apps 2026 · omninode-edge-fusion\n` +
+        `shape: ${document.getElementById("nasaShapePre").textContent}\n\n` +
+        document.getElementById("nasaGridPre").textContent;
+      navigator.clipboard.writeText(payload).then(() => showToast("Copied NASA OmniNode shape + grid/1 spec!"));
+    }
+
+    renderMatrix();
+    renderNasaMapper();
+  </script>
+</body>
+</html>
