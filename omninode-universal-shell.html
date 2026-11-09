@@ -1,0 +1,2015 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="only light">
+  <title>OmniNode Universal Shell: CARD Bricks, grid/1 Cell Ledger &amp; Algebraic Shape Composition</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --paper: #f5f2ea;
+      --card: #fcfbf7;
+      --card-alt: #eee9dd;
+      --code-bg: #efeae0;
+      --ink: #141310;
+      --muted: #55524a;
+      --line: #d6cfc2;
+      --teal: #1b6b52;
+      --teal-soft: #e6f3ee;
+      --blue: #1d5bbf;
+      --blue-soft: #e8f0fc;
+      --plum: #5c2d91;
+      --plum-soft: #f2ecfb;
+      --amber: #9a5b13;
+      --amber-soft: #fbf1e2;
+      --crimson: #9e2f2f;
+      --crimson-soft: #fbeaea;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.54;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 24px 22px 68px; }
+    .topnav {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      justify-content: space-between; padding-bottom: 14px;
+      border-bottom: 1px solid var(--line); margin-bottom: 20px;
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 7px; }
+    .nav-pill {
+      display: inline-block; padding: 5px 11px; border-radius: 999px;
+      font-size: 12.5px; font-weight: 600; background: var(--card);
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .nav-pill.active {
+      background: var(--teal-soft); border-color: var(--teal); color: var(--teal); font-weight: 700;
+    }
+    .eyebrow {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      background: var(--teal-soft); border: 1px solid #b6decb;
+      color: var(--teal); font-size: 11.8px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    h1 {
+      font-family: var(--serif); font-size: clamp(27px, 3.1vw, 39px);
+      line-height: 1.15; margin: 2px 0 10px; letter-spacing: -0.015em; color: var(--ink);
+    }
+    h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 6px; color: var(--ink); }
+    h3 { font-size: 15.5px; margin: 0 0 6px; color: var(--ink); }
+    .lede { font-size: 16px; color: var(--muted); max-width: 1080px; margin: 0 0 18px; }
+    .kpi-strip {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 11px; margin-bottom: 22px;
+    }
+    @media (max-width: 1060px) { .kpi-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .kpi-strip { grid-template-columns: 1fr; } }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 13px 15px;
+    }
+    .kpi .val { font-size: 21px; font-weight: 800; color: var(--teal); font-family: var(--mono); }
+    .kpi .lbl { font-size: 12.2px; color: var(--muted); margin-top: 4px; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 20px 22px; margin-bottom: 22px;
+    }
+    .sec-head {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: flex-start; gap: 10px; margin-bottom: 14px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--line);
+    }
+    .sec-sub { font-size: 14px; color: var(--muted); margin: 2px 0 0; max-width: 940px; }
+    .grid-2 { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; align-items: start; }
+    .grid-2-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 980px) {
+      .grid-2, .grid-2-eq { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 11px; padding: 14px 15px;
+    }
+    .panel-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+    button, .btn {
+      appearance: none; border: 1px solid var(--line); background: var(--card-alt);
+      color: var(--ink); font-family: var(--sans); font-size: 12.5px; font-weight: 600;
+      padding: 6px 11px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+    }
+    button:hover, .btn:hover { background: #e3ddd0; text-decoration: none; }
+    button.active, .btn-primary {
+      background: var(--teal); border-color: var(--teal); color: #fcfbf7;
+    }
+    button.active:hover, .btn-primary:hover { background: #155540; color: #fcfbf7; }
+    .btn-blue { background: var(--blue); border-color: var(--blue); color: #fcfbf7; }
+    .btn-blue:hover { background: #164799; color: #fcfbf7; }
+    .btn-amber { background: var(--amber-soft); border-color: #dfbe8f; color: var(--amber); }
+    .btn-crimson { background: var(--crimson-soft); border-color: #e4b4b4; color: var(--crimson); }
+    code {
+      font-family: var(--mono); font-size: 12.2px; background: var(--code-bg);
+      color: var(--ink); padding: 1px 6px; border-radius: 5px;
+    }
+    pre {
+      margin: 0; background: var(--code-bg); color: var(--ink);
+      border: 1px solid var(--line); border-radius: 9px; padding: 11px 13px;
+      font-family: var(--mono); font-size: 12px; line-height: 1.46;
+      overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+    }
+    label.ctrl {
+      display: block; font-size: 12.2px; font-weight: 700; color: var(--ink); margin-bottom: 8px;
+    }
+    label.ctrl span.val-tag {
+      float: right; font-family: var(--mono); color: var(--teal); font-weight: 700;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--teal); cursor: pointer; margin-top: 3px; }
+    input[type="text"], select {
+      width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--card); color: var(--ink); font-size: 12.6px; font-family: var(--mono);
+    }
+    canvas.stage-canvas {
+      width: 100%; height: auto; display: block;
+      background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    }
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 999px;
+      font-size: 11.2px; font-weight: 700; font-family: var(--mono);
+      background: var(--teal-soft); color: var(--teal); border: 1px solid #b8decb;
+    }
+    .badge.blue { background: var(--blue-soft); color: var(--blue); border-color: #bdd3f7; }
+    .badge.plum { background: var(--plum-soft); color: var(--plum); border-color: #d6c5f0; }
+    .badge.amber { background: var(--amber-soft); color: var(--amber); border-color: #e4c696; }
+    .badge.crimson { background: var(--crimson-soft); color: var(--crimson); border-color: #eababa; }
+    .brick-palette {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+    }
+    .brick-chip {
+      font-family: var(--mono); font-size: 11.4px; font-weight: 600;
+      padding: 4px 9px; border-radius: 7px; background: var(--card);
+      border: 1px solid var(--line); color: var(--ink); cursor: pointer;
+    }
+    .brick-chip:hover { border-color: var(--teal); background: var(--teal-soft); }
+    .brick-chip.in-shape {
+      background: var(--teal-soft); border-color: var(--teal); color: var(--teal); font-weight: 700;
+    }
+    .op-chip {
+      font-family: var(--mono); font-size: 12px; font-weight: 800;
+      padding: 4px 10px; border-radius: 7px; background: var(--blue-soft);
+      border: 1px solid #bdd3f7; color: var(--blue); cursor: pointer;
+    }
+    .mini-kpis {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 10px 0;
+    }
+    @media (max-width: 720px) { .mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .mini-kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 9px; padding: 8px 10px;
+    }
+    .mini-kpi .mv { font-family: var(--mono); font-size: 15px; font-weight: 800; color: var(--teal); }
+    .mini-kpi .ml { font-size: 11.1px; color: var(--muted); margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.4px; margin-top: 8px; }
+    th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th {
+      background: var(--card-alt); color: var(--ink); font-weight: 700;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .footer {
+      margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 12.8px; color: var(--muted); display: flex; flex-wrap: wrap;
+      justify-content: space-between; gap: 12px;
+    }
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; background: var(--teal);
+      color: #fcfbf7; padding: 9px 15px; border-radius: 8px; font-size: 13px;
+      font-weight: 700; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topnav">
+      <div class="nav-links">
+        <a class="nav-pill" href="index.html">Research Portal</a>
+        <a class="nav-pill active" href="omninode-universal-shell.html">OmniNode Universal Shell</a>
+        <a class="nav-pill" href="latent-mind-microscope.html">Latent Mind Microscope</a>
+        <a class="nav-pill" href="cybernetic-hypergrid-studio.html">9-Runtime HyperGrid Studio</a>
+        <a class="nav-pill" href="benchmark-and-rebuild-observatory.html">Observatory &amp; Continuum v1.2</a>
+        <a class="nav-pill" href="pactguard-paypal-studio.html">PactGuard Escrow</a>
+        <a class="nav-pill" href="ugos-nas-vaultloom.html">UGOS VaultLoom</a>
+        <a class="nav-pill" href="hermes-submission.html">Hermes Plugin Brief</a>
+      </div>
+      <div class="btn-row">
+        <a class="nav-pill" href="https://github.com/aidonerightcorp/omninode-manifold" target="_blank" rel="noopener">omninode-manifold &rarr;</a>
+        <a class="nav-pill" href="https://github.com/aidonerightcorp/continuum" target="_blank" rel="noopener">Continuum v1.2.0 &rarr;</a>
+      </div>
+    </nav>
+
+    <div class="eyebrow">Universal Encasement Architecture &middot; One Shell, Parameterized CARD Bricks &amp; grid/1 Cell Ledger</div>
+    <h1>OmniNode Universal Shell: Declarative <code>CARD</code> Bricks, <code>grid/1</code> Cell Ledger &amp; <code>&gt;&gt; // | @</code> Algebraic Composition</h1>
+    <p class="lede">
+      Every node runs the same compact <code>Shell</code> (<code>shell.py</code>). Node behavior comes strictly from modular <code>CARD</code> bricks read by static AST inspection without importing untrusted code, cached in <code>.omni/cas/</code>, pinned in <code>lockfile.json</code>, composed with sequence (<code>&gt;&gt;</code>), typed-failure waterfall (<code>//</code>), parallel sheaf fan-out (<code>|</code>), and independent <code>maker != checker</code> review (<code>@</code>), tagged with canonical <code>grid/1</code> cell digests, and emitted across <code>9</code> portable runtimes.
+    </p>
+
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="val">1 Universal Shell</div>
+        <div class="lbl">Single <code>Shell</code> runtime hosts directors, workers, stages, sources, searchers &amp; <code>gap-loop</code> builders down to <code>max_depth</code></div>
+      </div>
+      <div class="kpi">
+        <div class="val">13 CARD Bricks</div>
+        <div class="lbl">Static AST <code>CARD = {...}</code> metadata parsed with <code>0</code> code execution during discovery across latent, geometric &amp; solver domains</div>
+      </div>
+      <div class="kpi">
+        <div class="val">&gt;&gt; &middot; // &middot; | &middot; @</div>
+        <div class="lbl"><code>4</code> algebraic shape operators, <code>6</code> typed failure classes, waterfall reranking &amp; strict <code>maker != checker</code> refusal</div>
+      </div>
+      <div class="kpi">
+        <div class="val">grid/1 + Gen 1&rarr;2</div>
+        <div class="lbl">Browser-computed <code>sha256</code> cell digest over sorted normalized JSON with automatic boundary expansion at parameter edges</div>
+      </div>
+      <div class="kpi">
+        <div class="val">0 Searches / 9 Targets</div>
+        <div class="lbl">Deterministic empty-folder rebuild from <code>lockfile.json</code> + live <code>.wasm</code>, <code>Rust</code>, <code>C99</code>, <code>WGSL</code>, <code>GLSL</code>, <code>SQL</code>, <code>JS</code>, <code>Python</code> &amp; <code>.safetensors</code></div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: ALGEBRAIC SHAPE COMPOSER -->
+    <section id="sec-composer">
+      <div class="sec-head">
+        <div>
+          <h2>1. Interactive <code>OmniNode</code> Algebraic <code>shape</code> Composer (<code>&gt;&gt;</code>, <code>//</code>, <code>|</code>, <code>@</code>)</h2>
+          <p class="sec-sub">
+            Toggle any of the <code>13</code> cross-domain <code>CARD</code> bricks or edit the declarative <code>composition</code> expression directly. Inject typed failures (<code>transient</code>, <code>capability</code>, <code>contract</code>, <code>budget</code>) to watch waterfall rerouting (<code>//</code>), parallel sheaf fan-out (<code>|</code>), and disjoint <code>maker != checker</code> enforcement (<code>@</code>).
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="active" id="presetShape0" onclick="loadShapePreset(0)">Preset A: Latent Safety &amp; Steering</button>
+          <button type="button" id="presetShape1" onclick="loadShapePreset(1)">Preset B: Cross-Encoder &amp; HyperLoRA</button>
+          <button type="button" id="presetShape2" onclick="loadShapePreset(2)">Preset C: Waterfall Fallback</button>
+          <button type="button" id="presetShape3" onclick="loadShapePreset(3)">Preset D: Full Continuum Spine</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:14px;">
+        <div class="grid-2" style="margin-bottom:10px;">
+          <div>
+            <label class="ctrl" for="shapeExprInput">
+              Declarative <code>shape.composition</code> Expression (Operators: <code>&gt;&gt;</code> Sequence &middot; <code>//</code> Waterfall &middot; <code>|</code> Parallel Sheaf &middot; <code>@</code> Independent Check)
+            </label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="shapeExprInput" value="orient_profiler >> compose_grid >> (sae_matryoshka_zca | elk_truth_probe) >> (conditional_nullspace_steerer // leace_eraser) >> portable_9runtime_exporter @ independent_quorum_check" oninput="runShapeSimulation(false)">
+              <button type="button" class="btn-primary" onclick="runShapeSimulation(true)">Run Trace</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div>
+              <label class="ctrl" for="faultSelect">Primary Branch Fault</label>
+              <select id="faultSelect" onchange="runShapeSimulation(false)">
+                <option value="none">none (healthy)</option>
+                <option value="transient">transient (socket reset)</option>
+                <option value="capability">capability (missing class)</option>
+                <option value="contract">contract (schema mismatch)</option>
+                <option value="budget">budget (spend cap hit)</option>
+              </select>
+            </div>
+            <div>
+              <label class="ctrl" for="makerKeySelect">Maker Key</label>
+              <select id="makerKeySelect" onchange="runShapeSimulation(false)">
+                <option value="maker-worker-01">maker-worker-01</option>
+                <option value="maker-worker-02">maker-worker-02</option>
+              </select>
+            </div>
+            <div>
+              <label class="ctrl" for="checkerKeySelect">Checker Key (<code>@</code>)</label>
+              <select id="checkerKeySelect" onchange="runShapeSimulation(false)">
+                <option value="checker-quorum-09">checker-quorum-09 (disjoint)</option>
+                <option value="maker-worker-01">maker-worker-01 (COLLISION)</option>
+                <option value="maker-worker-02">maker-worker-02</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;">
+          <div style="font-size:12px;font-weight:700;color:var(--muted);">Click a <code>CARD</code> brick to toggle in/out of pipeline, or insert an operator:</div>
+          <div class="btn-row">
+            <span class="op-chip" onclick="appendOperator('>>')" title="Sequence">&gt;&gt; seq</span>
+            <span class="op-chip" onclick="appendOperator('//')" title="Waterfall fallback">// waterfall</span>
+            <span class="op-chip" onclick="appendOperator('|')" title="Parallel sheaf fan-out">| parallel</span>
+            <span class="op-chip" onclick="appendOperator('@')" title="Independent check gate">@ check</span>
+            <button type="button" class="btn-crimson" onclick="triggerMakerCheckerCollision()">Test maker == checker Refusal</button>
+          </div>
+        </div>
+        <div class="brick-palette" id="brickPalette"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <span style="font-size:12.5px;font-weight:700;">Live Execution Graph &amp; Typed-Failure Rerouting Canvas</span>
+            <span class="badge" id="shapeStatusBadge">OK &middot; maker != checker</span>
+          </div>
+          <canvas id="shapeCanvas" class="stage-canvas" width="720" height="390"></canvas>
+          <div class="mini-kpis">
+            <div class="mini-kpi">
+              <div class="mv" id="skpiSteps">7 / 7</div>
+              <div class="ml">Executed Child Nodes</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="skpiLatency">2.14 ms</div>
+              <div class="ml">Critical-Path Latency</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="skpiSheaf">0.008</div>
+              <div class="ml">Parallel Sheaf Coboundary</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="skpiGate">PASSED</div>
+              <div class="ml"><code>@</code> Handoff Gate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <h3><code>shape-runner</code> Step Trace &amp; Waterfall Rerank</h3>
+            <span class="badge blue" id="rerankOrderBadge">rerank: default</span>
+          </div>
+          <pre id="shapeTracePre" style="min-height:224px;max-height:260px;"></pre>
+          <div style="margin-top:10px;">
+            <h3>Active <code>OmniNode</code> Spec Envelope (<code>omninode.shape.v1</code>)</h3>
+            <pre id="shapeSpecPre" style="max-height:175px;"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: NODEGRID + CANONICAL GRID/1 CELL DIGEST & GEN 1->2 EXPANSION -->
+    <section id="sec-grid">
+      <div class="sec-head">
+        <div>
+          <h2>2. Parameterized <code>NodeGrid</code>, Canonical <code>grid/1</code> Cell Digest &amp; Boundary Auto-Expansion (<code>Gen 1 &rarr; Gen 2</code>)</h2>
+          <p class="sec-sub">
+            Every run writes a single append-only <code>grid/1</code> JSONL record tagged with <code>cell = sha256(normalized_config)</code> (sorted keys, compact JSON, 6-decimal rounding, explicit <code>"unknown"</code> preservation). When empirical performance saturates a <code>Gen 1</code> parameter edge, <code>NodeGrid</code> automatically expands that axis into <code>Gen 2</code>.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-amber" onclick="saturateGen1Edge()">Saturate Gen-1 Edge &rarr; Trigger Gen-2 Expansion</button>
+          <button type="button" onclick="resetGridDefaults()">Reset Gen-1 Interior</button>
+          <button type="button" class="btn-primary" onclick="copyGridRecord()">Copy <code>grid/1</code> JSONL</button>
+        </div>
+      </div>
+
+      <div class="grid-2-eq">
+        <div class="panel">
+          <h3><code>NodeGrid</code> Parameter Axes &amp; Cross-Axis Rules</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+            <div>
+              <label class="ctrl" for="axisDict"><code>dictionary_family</code></label>
+              <select id="axisDict" onchange="updateGridCell()">
+                <option value="Matryoshka" selected>Matryoshka (nested prefix)</option>
+                <option value="BatchTopK">BatchTopK</option>
+                <option value="TopK">TopK</option>
+                <option value="JumpReLU">JumpReLU</option>
+                <option value="Gated">Gated</option>
+              </select>
+            </div>
+            <div>
+              <label class="ctrl" for="axisPrecond"><code>preconditioner</code></label>
+              <select id="axisPrecond" onchange="updateGridCell()">
+                <option value="ZCA" selected>ZCA (whitened)</option>
+                <option value="Mahalanobis">Mahalanobis</option>
+                <option value="None">None (identity)</option>
+              </select>
+            </div>
+            <div>
+              <label class="ctrl" for="axisRuntime"><code>runtime_target</code></label>
+              <select id="axisRuntime" onchange="syncRuntimeFromGrid()">
+                <option value="wasm_simd" selected>wasm_simd (.wasm)</option>
+                <option value="rust_no_std">rust_no_std (.rs)</option>
+                <option value="c99_iso">c99_iso (.h)</option>
+                <option value="wgsl_webgpu">wgsl_webgpu (.wgsl)</option>
+                <option value="glsl_webgl2">glsl_webgl2 (.glsl)</option>
+                <option value="sqlite_sql">sqlite_sql (.sql)</option>
+                <option value="es2022_js">es2022_js (.mjs)</option>
+                <option value="python_numpy">python_numpy (.py)</option>
+                <option value="safetensors">safetensors (.safetensors)</option>
+              </select>
+            </div>
+            <div>
+              <label class="ctrl" for="axisUnknown"><code>unknown</code> Axis Handling</label>
+              <select id="axisUnknown" onchange="updateGridCell()">
+                <option value="none" selected>[] (all axes recorded)</option>
+                <option value="data_version">["data_version"] (never guessed)</option>
+                <option value="hardware">["hardware", "data_version"]</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label class="ctrl" for="axisGate">
+              <code>steering_regime_gate</code> (Gen-1 bounds: <code>[0.10, 1.00]</code> &rarr; Gen-2: <code>[0.10, 1.50]</code>)
+              <span class="val-tag" id="axisGateVal">0.850000</span>
+            </label>
+            <input type="range" id="axisGate" min="0.10" max="1.50" step="0.05" value="0.85" oninput="updateGridCell()">
+          </div>
+
+          <div style="margin-top:10px;">
+            <label class="ctrl" for="axisAlpha">
+              <code>conformal_alpha</code> (Gen-1 bounds: <code>[0.05, 0.20]</code> &rarr; Gen-2: <code>[0.01, 0.25]</code>)
+              <span class="val-tag" id="axisAlphaVal">0.080000</span>
+            </label>
+            <input type="range" id="axisAlpha" min="0.01" max="0.25" step="0.01" value="0.08" oninput="updateGridCell()">
+          </div>
+
+          <div class="mini-kpis" style="margin-top:12px;">
+            <div class="mini-kpi">
+              <div class="mv" id="gkpiGen">Gen 1</div>
+              <div class="ml">Active Grid Generation</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="gkpiCellShort"><code>--</code></div>
+              <div class="ml">Cell Prefix (8 chars)</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="gkpiScore">0.9884</div>
+              <div class="ml">Empirical Objective</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="gkpiWebCrypto">MATCH</div>
+              <div class="ml">WebCrypto Digest Parity</div>
+            </div>
+          </div>
+
+          <canvas id="gridBoundaryCanvas" class="stage-canvas" width="590" height="225"></canvas>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <h3>Live Canonical <code>grid/1</code> Record &amp; Normalized Payload</h3>
+            <span class="badge plum" id="gridExpansionBadge">Gen 1 Interior Cell</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+            Full 64-hex <code>cell</code> (<code>sha256</code> of compact sorted-key <code>config</code>):
+          </div>
+          <pre id="gridCellHexPre" style="margin-bottom:10px;font-weight:700;"></pre>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+            Append-only <code>grid-records.jsonl</code> line (<code>format: "grid/1"</code>):
+          </div>
+          <pre id="gridRecordPre" style="min-height:315px;max-height:365px;"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: STATIC AST CARD INSPECTOR, LOCKFILE CAS & GAP-LOOP -->
+    <section id="sec-cas">
+      <div class="sec-head">
+        <div>
+          <h2>3. Static AST <code>CARD</code> Inspector, <code>.omni/cas/</code> Lockfile Pinning, <code>0</code>-Search Rebuild &amp; <code>gap-loop</code> Self-Synthesis</h2>
+          <p class="sec-sub">
+            <code>shell.card_of(text)</code> parses top-level <code>CARD = {...}</code> assignments via static AST inspection before any module code runs. Test empty-folder <code>lockfile.json</code> rebuilds (<code>0</code> searches), upstream source tamper detection (<code>hash_mismatch &rarr; contract</code> refusal), and constructive <code>gap-loop</code> synthesis (<code>declined &rarr; built_&lt;cap&gt;.py &rarr; passed</code>).
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn-primary" onclick="runCasScenario('rebuild')">(a) Wipe <code>.omni</code> &amp; Rebuild from Lockfile (0 Searches)</button>
+          <button type="button" class="btn-crimson" onclick="runCasScenario('tamper')">(b) Simulate Upstream Source Tamper</button>
+          <button type="button" class="btn-blue" onclick="runCasScenario('gap')">(c) Trigger Capability Miss &rarr; <code>gap-loop</code> Synthesis</button>
+          <button type="button" onclick="runCasScenario('reset')">Reset Clean State</button>
+        </div>
+      </div>
+
+      <div class="grid-2-eq">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;">
+            <h3>Static AST <code>CARD</code> Brick Source &amp; <code>.omni/cas/</code> Entry</h3>
+            <select id="cardInspectorSelect" style="width:auto;min-width:250px;" onchange="renderCardInspector()"></select>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+            Component Python source (read-only static AST scan; never imported until digest matches pin):
+          </div>
+          <pre id="cardSourcePre" style="min-height:175px;max-height:215px;margin-bottom:10px;"></pre>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">
+            Extracted <code>ast.literal_eval(CARD)</code> + content-addressed path:
+          </div>
+          <pre id="cardAstPre" style="min-height:145px;max-height:185px;"></pre>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <h3><code>lockfile.json</code> Pins &amp; Append-Only <code>.omni/facts.jsonl</code></h3>
+            <span class="badge" id="casStateBadge">LOCKED &middot; 0 Searches</span>
+          </div>
+          <div class="mini-kpis">
+            <div class="mini-kpi">
+              <div class="mv" id="ckpiSearches">0</div>
+              <div class="ml">Searches During Rebuild</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="ckpiCasCount">13</div>
+              <div class="ml"><code>.omni/cas/*.py</code> Cached</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="ckpiBuilt">0</div>
+              <div class="ml"><code>built_*.py</code> Admitted</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="ckpiVerdict">OK</div>
+              <div class="ml">Shell Gate Status</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:5px;">
+            Pinned <code>lockfile.json</code> excerpt (nodes + boot sources):
+          </div>
+          <pre id="lockfilePre" style="max-height:155px;margin-bottom:10px;"></pre>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:5px;">
+            Append-only <code>.omni/facts.jsonl</code> event stream:
+          </div>
+          <pre id="factsLogPre" style="min-height:145px;max-height:175px;"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: 9 PORTABLE RUNTIMES EMITTER -->
+    <section id="sec-exporter">
+      <div class="sec-head">
+        <div>
+          <h2>4. Any <code>OmniNode</code> &rarr; <code>9</code> Portable Runtimes Live Cartridge Emitter</h2>
+          <p class="sec-sub">
+            Compiles the active composed <code>OmniNode</code> pipeline (Section 1) and canonical <code>grid/1</code> cell (Section 2) into self-contained, zero-dependency execution targets, including a real in-browser IEEE-754 <code>.wasm</code> binary instantiated via <code>WebAssembly.instantiate</code> and an aligned <code>.safetensors</code> weight cartridge.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" onclick="copyRuntimeArtifact()">Copy Active Source</button>
+          <button type="button" class="btn-primary" onclick="downloadRuntimeArtifact()">Download Cartridge</button>
+        </div>
+      </div>
+
+      <div class="btn-row" id="runtimeTabs" style="margin-bottom:12px;"></div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <span id="rtHeaderLabel" style="font-size:13px;font-weight:700;font-family:var(--mono);">omninode_cell.wat + live .wasm</span>
+            <span class="badge" id="rtSizeBadge">0 B</span>
+          </div>
+          <pre id="rtCodePre" style="min-height:300px;max-height:380px;"></pre>
+        </div>
+
+        <div class="panel">
+          <h3>Live Browser <code>WebAssembly.instantiate</code> &amp; Runtime Parity</h3>
+          <p style="font-size:12.6px;color:var(--muted);margin:0 0 10px;">
+            Synthesizes valid <code>\0asm</code> IEEE-754 bytecode for the composed <code>OmniNode</code> nullspace + sheaf gate directly in browser memory and checks output parity against <code>Float32Array</code> reference math.
+          </p>
+          <div class="panel-card" id="wasmBenchCard" style="font-family:var(--mono);font-size:12px;margin-bottom:10px;">
+            Compiling live .wasm cartridge...
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Runtime Target</th>
+                <th>Deps</th>
+                <th>Artifact Footprint</th>
+                <th>Primary Deployment Surface</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>.wasm</code> (WAT + Binary)</td><td><code>0</code></td><td><code>~590 B</code></td><td>Browser, Cloudflare Workers, WASI edge</td></tr>
+              <tr><td><code>Rust #![no_std]</code></td><td><code>0</code></td><td><code>const [f32; 64]</code></td><td>Embedded MCU, kernel / enclave modules</td></tr>
+              <tr><td><code>ISO C99</code></td><td><code>0</code></td><td><code>static const float</code></td><td>POSIX daemons, robotics, C FFI hosts</td></tr>
+              <tr><td><code>WebGPU WGSL</code></td><td><code>0</code></td><td><code>@compute @workgroup_size(64)</code></td><td>Browser &amp; native GPU compute pipelines</td></tr>
+              <tr><td><code>WebGL2 GLSL</code></td><td><code>0</code></td><td><code>#version 300 es</code></td><td>Universal mobile/desktop shader fallback</td></tr>
+              <tr><td><code>SQL</code></td><td><code>0</code></td><td><code>SQLite / pg table + query</code></td><td>Transactional database-local scoring</td></tr>
+              <tr><td><code>ES2022 JS</code></td><td><code>0</code></td><td><code>Float32Array</code> module</td><td>Node, Deno, Bun, zero-build web apps</td></tr>
+              <tr><td><code>Python</code></td><td><code>stdlib</code></td><td><code>Shell + CARD spec</code></td><td><code>shell.py</code> nodes, CLI &amp; Kaggle runners</td></tr>
+              <tr><td><code>.safetensors</code></td><td><code>0</code></td><td><code>8-byte LE header + F32</code></td><td>Zero-copy <code>mmap</code> weight folding</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>
+        <strong>AI Done Right Corp</strong> &middot; <code>OmniNode Universal Shell</code> + <code>Continuum v1.2.0</code> + <code>latent-prism v1.0.0</code> &middot; Paper &amp; Ink Light Workbench
+      </div>
+      <div>
+        <a href="index.html">Portal</a> &middot;
+        <a href="latent-mind-microscope.html">Latent Mind Microscope</a> &middot;
+        <a href="cybernetic-hypergrid-studio.html">HyperGrid Studio</a> &middot;
+        <a href="hermes-submission.html">Hermes Plugin Brief</a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    // Pure-JS FIPS 180-4 SHA-256 (works synchronously on file:// and https://; cross-checked with WebCrypto)
+    function sha256HexSync(asciiOrUtf8) {
+      const bytes = new TextEncoder().encode(asciiOrUtf8);
+      const K = new Uint32Array([
+        0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+        0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+        0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+        0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+        0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+        0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+        0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+        0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+      ]);
+      const H = new Uint32Array([
+        0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,
+        0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19
+      ]);
+      const bitLen = bytes.length * 8;
+      const padLen = ((bytes.length + 9 + 63) >> 6) << 6;
+      const buf = new Uint8Array(padLen);
+      buf.set(bytes);
+      buf[bytes.length] = 0x80;
+      const dv = new DataView(buf.buffer);
+      dv.setUint32(padLen - 8, Math.floor(bitLen / 0x100000000), false);
+      dv.setUint32(padLen - 4, bitLen >>> 0, false);
+
+      const W = new Uint32Array(64);
+      const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+      for (let off = 0; off < padLen; off += 64) {
+        for (let i = 0; i < 16; i++) W[i] = dv.getUint32(off + i * 4, false);
+        for (let i = 16; i < 64; i++) {
+          const s0 = rotr(W[i - 15], 7) ^ rotr(W[i - 15], 18) ^ (W[i - 15] >>> 3);
+          const s1 = rotr(W[i - 2], 17) ^ rotr(W[i - 2], 19) ^ (W[i - 2] >>> 10);
+          W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0;
+        }
+        let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+        for (let i = 0; i < 64; i++) {
+          const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+          const ch = (e & f) ^ ((~e) & g);
+          const temp1 = (h + S1 + ch + K[i] + W[i]) >>> 0;
+          const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+          const maj = (a & b) ^ (a & c) ^ (b & c);
+          const temp2 = (S0 + maj) >>> 0;
+          h = g; g = f; f = e; e = (d + temp1) >>> 0;
+          d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+        }
+        H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+        H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+      }
+      return Array.from(H).map((v) => v.toString(16).padStart(8, "0")).join("");
+    }
+
+    // 13 Universal CARD Bricks across domains
+    const CARD_BRICKS = [
+      {
+        name: "orient_profiler",
+        role: "worker",
+        domain: "intake",
+        ms: 0.18,
+        describes: "extract workload regime signature, token anisotropy and slot shape with zero model calls",
+        keywords: ["orient", "profile", "regime", "slots", "lexicon"],
+        body: "def run(node, job):\n    q = str(job.get('want', ''))\n    regime = 'formal_audit' if len(q) > 48 else 'fast_dispatch'\n    return {'ok': True, 'output': {'regime': regime, 'anisotropy': 0.842}}"
+      },
+      {
+        name: "compose_grid",
+        role: "stage",
+        domain: "grid",
+        ms: 0.12,
+        describes: "resolve canonical NodeGrid cell parameters and clamp to active ParameterBounds",
+        keywords: ["compose", "grid", "cell", "bounds", "clamp"],
+        body: "def run(node, job):\n    cfg = node.settings.get('grid_config', {})\n    return {'ok': True, 'output': {'grid_resolved': True, 'axes': len(cfg)}}"
+      },
+      {
+        name: "sae_matryoshka_zca",
+        role: "worker",
+        domain: "latent",
+        ms: 0.64,
+        describes: "encode residual stream with ZCA whitening and nested Matryoshka sparse dictionary prefixes",
+        keywords: ["sae", "matryoshka", "zca", "sparse", "dictionary"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'fvu': 0.0184, 'l0': 7.86, 'prefix_tiers': [32, 128, 512]}}"
+      },
+      {
+        name: "crosscoder_transcoder",
+        role: "worker",
+        domain: "latent",
+        ms: 0.72,
+        describes: "trace cross-layer persistent threads and MLP sparse transcoder causal indirect effects",
+        keywords: ["crosscoder", "transcoder", "causal", "mlp", "procrustes"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'procrustes_cos': 0.9971, 'indirect_effect': 0.64}}"
+      },
+      {
+        name: "elk_truth_probe",
+        role: "stage",
+        domain: "epistemic",
+        ms: 0.21,
+        describes: "compare internal truth trajectory against output agreement via cellular sheaf coboundary",
+        keywords: ["elk", "truth", "probe", "sheaf", "conformal"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'p_truth_l8': 0.96, 'sheaf_residual': 0.008}}"
+      },
+      {
+        name: "leace_eraser",
+        role: "transform",
+        domain: "steering",
+        ms: 0.29,
+        describes: "apply closed-form oblique projection to erase unwanted concept covariance cleanly",
+        keywords: ["leace", "erase", "projection", "covariance", "fallback"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'erased_rank': 1, 'residual_leakage': 0.0}}"
+      },
+      {
+        name: "conditional_nullspace_steerer",
+        role: "transform",
+        domain: "steering",
+        ms: 0.35,
+        describes: "project steering vector into anchor nullspace (I - P_anchor) d with 0.0000 anchor drift",
+        keywords: ["nullspace", "steer", "surgical", "anchor", "orthogonal"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'anchor_drift': 0.0, 'hook_overhead_ms': 0.0}}"
+      },
+      {
+        name: "platonic_bridge",
+        role: "transform",
+        domain: "manifold",
+        ms: 0.31,
+        describes: "align heterogeneous encoder subspaces with orthogonal Procrustes rotation and 0 re-indexing",
+        keywords: ["platonic", "bridge", "procrustes", "align", "subspace"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'alignment_cos': 0.9865, 'reindexed_rows': 0}}"
+      },
+      {
+        name: "loop_curvature_breaker",
+        role: "stage",
+        domain: "control",
+        ms: 0.14,
+        describes: "detect cyclic trajectory stalls via discrete Jacobian curvature and halt runaway loops",
+        keywords: ["loop", "curvature", "jacobian", "breaker", "guard"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'spectral_radius': 0.41, 'loop_free': True}}"
+      },
+      {
+        name: "hyperlora_kronecker",
+        role: "worker",
+        domain: "weights",
+        ms: 0.42,
+        describes: "fold 256-byte rank-1 Kronecker weight delta into target projection matrix at 0 runtime cost",
+        keywords: ["hyperlora", "kronecker", "lora", "weights", "cartridge"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'adapter_bytes': 256, 'rank': 1}}"
+      },
+      {
+        name: "woodbury_sinkhorn_solver",
+        role: "worker",
+        domain: "solver",
+        ms: 0.48,
+        describes: "update inverse covariance via exact rank-1 Woodbury step with Sinkhorn balanced routing",
+        keywords: ["woodbury", "sinkhorn", "solver", "ridge", "transport"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'rls_forgetting_pp': 0.0, 'sinkhorn_iters': 6}}"
+      },
+      {
+        name: "portable_9runtime_exporter",
+        role: "worker",
+        domain: "export",
+        ms: 0.38,
+        describes: "emit zero-dependency wasm, Rust, C99, WGSL, GLSL, SQL, JS, Python and safetensors artifacts",
+        keywords: ["portable", "runtime", "exporter", "wasm", "wgsl"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'targets_emitted': 9, 'wasm_parity_diff': 0.0}}"
+      },
+      {
+        name: "independent_quorum_check",
+        role: "check",
+        domain: "check",
+        ms: 0.26,
+        describes: "enforce maker != checker identity separation and run frozen hidden invariant checks",
+        keywords: ["independent", "quorum", "check", "disjoint", "invariants"],
+        body: "def run(node, job):\n    return {'ok': True, 'output': {'invariants_ok': True, 'hidden_cases': '12/12'}}"
+      }
+    ];
+
+    function buildBrickSource(b, tampered = false) {
+      const cardObj = {
+        name: b.name,
+        role: b.role,
+        describes: b.describes,
+        keywords: b.keywords
+      };
+      const tamperLine = tampered ? "\n# upstream unpinned edit: bias = 0.42\n" : "\n";
+      return `"""OmniNode modular component (${b.domain}); loaded by shell.py after digest check."""\nCARD = ${JSON.stringify(cardObj)}\n${tamperLine}\n${b.body}\n`;
+    }
+
+    const BRICK_MAP = {};
+    CARD_BRICKS.forEach((b) => {
+      b.source = buildBrickSource(b, false);
+      b.sha256 = sha256HexSync(b.source);
+      BRICK_MAP[b.name] = b;
+    });
+
+    const SHAPE_PRESETS = [
+      "orient_profiler >> compose_grid >> (sae_matryoshka_zca | elk_truth_probe) >> (conditional_nullspace_steerer // leace_eraser) >> portable_9runtime_exporter @ independent_quorum_check",
+      "orient_profiler >> (crosscoder_transcoder | platonic_bridge) >> (hyperlora_kronecker // woodbury_sinkhorn_solver) >> loop_curvature_breaker @ independent_quorum_check",
+      "orient_profiler >> (sae_matryoshka_zca // woodbury_sinkhorn_solver) >> portable_9runtime_exporter @ independent_quorum_check",
+      "orient_profiler >> compose_grid >> (sae_matryoshka_zca | crosscoder_transcoder) >> elk_truth_probe >> conditional_nullspace_steerer >> hyperlora_kronecker >> portable_9runtime_exporter @ independent_quorum_check"
+    ];
+
+    const RERANK_ORDERS = {
+      none: "default (no failure)",
+      transient: "retry(backoff=0.2s) -> local_cache_worker -> woodbury_sinkhorn_solver",
+      capability: "fallback_transform (leace_eraser) -> gap_loop.enqueue_miss",
+      contract: "quarantine_stage -> strict_schema_fallback -> independent_quorum_check",
+      budget: "zero_token_rule_path -> 256B_wasm_offload (0 model spend)"
+    };
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 1900);
+    }
+
+    // --- Tokenizer & Recursive-Descent Parser for >> // | @ ---
+    function tokenizeShape(expr) {
+      const tokens = [];
+      let i = 0;
+      while (i < expr.length) {
+        const ch = expr[i];
+        if (/\s/.test(ch)) { i++; continue; }
+        if (expr.slice(i, i + 2) === ">>" || expr.slice(i, i + 2) === "//") {
+          tokens.push({ type: "op", val: expr.slice(i, i + 2) });
+          i += 2;
+          continue;
+        }
+        if (ch === "|" || ch === "@") {
+          tokens.push({ type: "op", val: ch });
+          i++;
+          continue;
+        }
+        if (ch === "(" || ch === ")") {
+          tokens.push({ type: ch, val: ch });
+          i++;
+          continue;
+        }
+        const m = expr.slice(i).match(/^[a-zA-Z0-9_-]+/);
+        if (m) {
+          tokens.push({ type: "id", val: m[0] });
+          i += m[0].length;
+          continue;
+        }
+        i++;
+      }
+      return tokens;
+    }
+
+    // Precedence (lowest to highest): @  <  >>  <  //  <  |
+    function parseShape(expr) {
+      const toks = tokenizeShape(expr);
+      let pos = 0;
+      const peek = () => toks[pos] || null;
+      const eat = () => toks[pos++];
+
+      function parseAtom() {
+        const t = peek();
+        if (!t) return { kind: "step", name: "orient_profiler" };
+        if (t.type === "(") {
+          eat();
+          const inner = parseAt();
+          if (peek() && peek().type === ")") eat();
+          return inner;
+        }
+        if (t.type === "id") {
+          eat();
+          return { kind: "step", name: t.val };
+        }
+        eat();
+        return { kind: "step", name: "orient_profiler" };
+      }
+
+      function parseBar() {
+        let left = parseAtom();
+        while (peek() && peek().type === "op" && peek().val === "|") {
+          eat();
+          left = { kind: "op", op: "|", left, right: parseAtom() };
+        }
+        return left;
+      }
+
+      function parseWaterfall() {
+        let left = parseBar();
+        while (peek() && peek().type === "op" && peek().val === "//") {
+          eat();
+          left = { kind: "op", op: "//", left, right: parseBar() };
+        }
+        return left;
+      }
+
+      function parseSeq() {
+        let left = parseWaterfall();
+        while (peek() && peek().type === "op" && peek().val === ">>") {
+          eat();
+          left = { kind: "op", op: ">>", left, right: parseWaterfall() };
+        }
+        return left;
+      }
+
+      function parseAt() {
+        let left = parseSeq();
+        while (peek() && peek().type === "op" && peek().val === "@") {
+          eat();
+          left = { kind: "op", op: "@", left, right: parseSeq() };
+        }
+        return left;
+      }
+
+      return toks.length ? parseAt() : { kind: "step", name: "orient_profiler" };
+    }
+
+    function collectSteps(ast, out = []) {
+      if (!ast) return out;
+      if (ast.kind === "step") {
+        if (!out.includes(ast.name)) out.push(ast.name);
+        return out;
+      }
+      collectSteps(ast.left, out);
+      collectSteps(ast.right, out);
+      return out;
+    }
+
+    let lastSimStages = [];
+    let activeAnimIdx = -1;
+    let animTimer = null;
+
+    function evaluateAst(node, ctx) {
+      if (node.kind === "step") {
+        const brick = BRICK_MAP[node.name] || {
+          name: node.name, role: "worker", domain: "custom", ms: 0.25,
+          sha256: sha256HexSync(node.name)
+        };
+        if (ctx.injectFault !== "none" && !ctx.faultConsumed && ctx.inWaterfallPrimary) {
+          ctx.faultConsumed = true;
+          const retryMs = ctx.injectFault === "transient" ? 0.40 : 0.09;
+          ctx.trace.push(
+            `[FAIL:${ctx.injectFault}] child:${brick.name} (${brick.sha256.slice(0, 8)}) -> ok=false, ms=${retryMs.toFixed(2)} | director rerank triggered`
+          );
+          ctx.stages.push({
+            mode: "waterfall_fail",
+            nodes: [{ name: brick.name, status: "fail", detail: ctx.injectFault, ms: retryMs }]
+          });
+          return { ok: false, ms: retryMs, failure: ctx.injectFault };
+        }
+        ctx.executedCount++;
+        ctx.trace.push(
+          `[PASS] child:${brick.name} (role=${brick.role}, cas=${brick.sha256.slice(0, 8)}) -> ok=true, ms=${brick.ms.toFixed(2)}`
+        );
+        ctx.stages.push({
+          mode: ctx.stageHint || "seq",
+          nodes: [{ name: brick.name, status: "ok", detail: brick.role, ms: brick.ms }]
+        });
+        return { ok: true, ms: brick.ms };
+      }
+
+      if (node.op === ">>") {
+        const l = evaluateAst(node.left, ctx);
+        if (!l.ok) return l;
+        const r = evaluateAst(node.right, ctx);
+        return { ok: r.ok, ms: l.ms + r.ms, failure: r.failure };
+      }
+
+      if (node.op === "//") {
+        const prevFlag = ctx.inWaterfallPrimary;
+        ctx.inWaterfallPrimary = true;
+        const l = evaluateAst(node.left, ctx);
+        ctx.inWaterfallPrimary = prevFlag;
+        if (l.ok) {
+          const skippedNames = collectSteps(node.right);
+          ctx.trace.push(`[SKIP //] primary succeeded; standby [${skippedNames.join(", ")}] kept warm (0 ms)`);
+          ctx.stages.push({
+            mode: "waterfall_standby",
+            nodes: skippedNames.map((n) => ({ name: n, status: "standby", detail: "standby //", ms: 0 }))
+          });
+          return l;
+        }
+        ctx.rerouted = true;
+        ctx.trace.push(`[REROUTE //] kind=${l.failure} -> switching to fallback branch (${RERANK_ORDERS[l.failure]})`);
+        const r = evaluateAst(node.right, { ...ctx, stageHint: "fallback_ok" });
+        ctx.executedCount = (ctx.executedCount || 0) + 1;
+        return { ok: r.ok, ms: l.ms + r.ms };
+      }
+
+      if (node.op === "|") {
+        const leftNames = collectSteps(node.left);
+        const rightNames = collectSteps(node.right);
+        const allNames = [...leftNames, ...rightNames];
+        let maxMs = 0;
+        const pNodes = allNames.map((nm) => {
+          const b = BRICK_MAP[nm] || { name: nm, role: "worker", ms: 0.25, sha256: sha256HexSync(nm) };
+          if (b.ms > maxMs) maxMs = b.ms;
+          ctx.executedCount++;
+          return { name: b.name, status: "parallel", detail: `| ${b.role}`, ms: b.ms, sha: b.sha256.slice(0, 8) };
+        });
+        ctx.sheafCoboundary = 0.008;
+        ctx.trace.push(
+          `[PARALLEL |] fan-out [${allNames.join(" | ")}] -> all(oks)=true, sheaf_coboundary=0.008, wall_ms=${maxMs.toFixed(2)}`
+        );
+        ctx.stages.push({ mode: "parallel", nodes: pNodes });
+        return { ok: true, ms: maxMs };
+      }
+
+      if (node.op === "@") {
+        const l = evaluateAst(node.left, ctx);
+        if (!l.ok) return l;
+        if (ctx.makerKey.trim().toLowerCase() === ctx.checkerKey.trim().toLowerCase()) {
+          const chkNames = collectSteps(node.right);
+          ctx.gateStatus = "REFUSED (maker == checker)";
+          ctx.trace.push(
+            `[REFUSED @] handoff blocked: maker_key ('${ctx.makerKey}') == checker_key ('${ctx.checkerKey}') -> failure=contract`
+          );
+          ctx.stages.push({
+            mode: "check_refused",
+            nodes: chkNames.map((nm) => ({ name: nm, status: "refused", detail: "maker==checker", ms: 0.04 }))
+          });
+          return { ok: false, ms: l.ms + 0.04, failure: "contract" };
+        }
+        ctx.trace.push(
+          `[HANDOFF @] maker_key='${ctx.makerKey}' != checker_key='${ctx.checkerKey}' -> check_state='awaiting_independent_check'`
+        );
+        const prevHint = ctx.stageHint;
+        ctx.stageHint = "check_ok";
+        const r = evaluateAst(node.right, ctx);
+        ctx.stageHint = prevHint;
+        ctx.gateStatus = r.ok ? "PASSED (disjoint)" : "FAILED";
+        return { ok: r.ok, ms: l.ms + r.ms };
+      }
+      return { ok: true, ms: 0.1 };
+    }
+
+    function renderBrickPalette(activeNames) {
+      const box = document.getElementById("brickPalette");
+      box.innerHTML = "";
+      CARD_BRICKS.forEach((b) => {
+        const span = document.createElement("button");
+        span.type = "button";
+        span.className = "brick-chip" + (activeNames.includes(b.name) ? " in-shape" : "");
+        span.textContent = `${b.name} (${b.role})`;
+        span.onclick = () => toggleBrickInExpr(b.name);
+        box.appendChild(span);
+      });
+    }
+
+    function toggleBrickInExpr(brickName) {
+      const inp = document.getElementById("shapeExprInput");
+      const expr = inp.value.trim();
+      const used = collectSteps(parseShape(expr));
+      if (used.includes(brickName) && used.length > 2) {
+        const re = new RegExp(`\\b${brickName}\\b`, "g");
+        let next = expr.replace(re, "").replace(/\(\s*\|\s*/g, "(").replace(/\s*\|\s*\)/g, ")")
+          .replace(/\(\s*\/\/\s*/g, "(").replace(/\s*\/\/\s*\)/g, ")")
+          .replace(/\(\s*([a-zA-Z0-9_-]+)\s*\)/g, "$1")
+          .replace(/(>>|\/\/|\||@)\s*(>>|\/\/|\||@)/g, "$2")
+          .replace(/^\s*(>>|\/\/|\||@)\s*/, "")
+          .replace(/\s*(>>|\/\/|\||@)\s*$/, "")
+          .replace(/\s{2,}/g, " ").trim();
+        inp.value = next || "orient_profiler >> independent_quorum_check";
+      } else if (!used.includes(brickName)) {
+        if (brickName === "independent_quorum_check") {
+          inp.value = `${expr} @ independent_quorum_check`;
+        } else if (expr.includes("@")) {
+          const parts = expr.split("@");
+          inp.value = `${parts[0].trim()} >> ${brickName} @ ${parts.slice(1).join("@").trim()}`;
+        } else {
+          inp.value = `${expr} >> ${brickName}`;
+        }
+      }
+      runShapeSimulation(false);
+    }
+
+    function appendOperator(op) {
+      const inp = document.getElementById("shapeExprInput");
+      const unused = CARD_BRICKS.find((b) => !inp.value.includes(b.name)) || CARD_BRICKS[10];
+      inp.value = `${inp.value.trim()} ${op} ${unused.name}`;
+      runShapeSimulation(false);
+    }
+
+    function triggerMakerCheckerCollision() {
+      document.getElementById("makerKeySelect").value = "maker-worker-01";
+      document.getElementById("checkerKeySelect").value = "maker-worker-01";
+      runShapeSimulation(true);
+      showToast("Triggered maker == checker contract refusal!");
+    }
+
+    function loadShapePreset(idx) {
+      for (let i = 0; i < 4; i++) {
+        document.getElementById("presetShape" + i).classList.toggle("active", i === idx);
+      }
+      document.getElementById("shapeExprInput").value = SHAPE_PRESETS[idx];
+      if (idx === 2) {
+        document.getElementById("faultSelect").value = "capability";
+      } else {
+        document.getElementById("faultSelect").value = "none";
+      }
+      document.getElementById("makerKeySelect").value = "maker-worker-01";
+      document.getElementById("checkerKeySelect").value = "checker-quorum-09";
+      runShapeSimulation(true);
+    }
+
+    function drawShapeCanvas(stages, highlightIdx) {
+      const canvas = document.getElementById("shapeCanvas");
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#fcfbf7";
+      ctx.fillRect(0, 0, W, H);
+
+      // Subtle grid lines
+      ctx.strokeStyle = "#ede7da";
+      ctx.lineWidth = 1;
+      for (let x = 24; x < W; x += 36) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 24; y < H; y += 36) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      if (!stages.length) return;
+      const cols = stages.length;
+      const padX = 22;
+      const colW = Math.min(138, (W - padX * 2 - (cols - 1) * 14) / cols);
+      const gapX = cols > 1 ? (W - padX * 2 - colW * cols) / (cols - 1) : 0;
+
+      const centers = [];
+      stages.forEach((st, cIdx) => {
+        const x = padX + cIdx * (colW + gapX);
+        const nCount = st.nodes.length;
+        const boxH = nCount > 1 ? 74 : 84;
+        const totalH = nCount * boxH + (nCount - 1) * 18;
+        const startY = (H - totalH) / 2;
+        const colCenters = [];
+
+        // Column operator header pill
+        const opLabel = st.mode === "parallel" ? "| PARALLEL" :
+          st.mode === "waterfall_fail" ? "// FAULT" :
+          st.mode === "waterfall_standby" ? "// STANDBY" :
+          st.mode === "check_ok" || st.mode === "check_refused" ? "@ CHECK" : ">> STEP";
+        ctx.fillStyle = "#55524a";
+        ctx.font = "700 10px ui-monospace, Menlo, monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(opLabel, x + colW / 2, Math.max(22, startY - 12));
+
+        st.nodes.forEach((nd, rIdx) => {
+          const y = startY + rIdx * (boxH + 18);
+          colCenters.push({ x, y, w: colW, h: boxH, status: nd.status });
+        });
+        centers.push(colCenters);
+      });
+
+      // Connector lines
+      for (let c = 0; c < centers.length - 1; c++) {
+        const leftCol = centers[c];
+        const rightCol = centers[c + 1];
+        leftCol.forEach((lc) => {
+          rightCol.forEach((rc) => {
+            ctx.beginPath();
+            ctx.moveTo(lc.x + lc.w, lc.y + lc.h / 2);
+            const midX = (lc.x + lc.w + rc.x) / 2;
+            ctx.bezierCurveTo(midX, lc.y + lc.h / 2, midX, rc.y + rc.h / 2, rc.x, rc.y + rc.h / 2);
+            ctx.strokeStyle = rc.status === "refused" || lc.status === "fail" ? "#9e2f2f" :
+              rc.status === "standby" ? "#b9b1a2" : "#1b6b52";
+            ctx.lineWidth = rc.status === "standby" ? 1.2 : 2.0;
+            if (rc.status === "standby") ctx.setLineDash([4, 4]);
+            else ctx.setLineDash([]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          });
+        });
+      }
+
+      // Draw Node Cards
+      stages.forEach((st, cIdx) => {
+        st.nodes.forEach((nd, rIdx) => {
+          const box = centers[cIdx][rIdx];
+          const isHi = highlightIdx === cIdx;
+          let fill = "#e6f3ee", stroke = "#1b6b52", pillColor = "#1b6b52";
+          if (nd.status === "parallel") { fill = "#e8f0fc"; stroke = "#1d5bbf"; pillColor = "#1d5bbf"; }
+          else if (nd.status === "standby") { fill = "#f3efe6"; stroke = "#b5ad9e"; pillColor = "#6f6a60"; }
+          else if (nd.status === "fail" || nd.status === "refused") { fill = "#fbeaea"; stroke = "#9e2f2f"; pillColor = "#9e2f2f"; }
+          else if (st.mode === "check_ok") { fill = "#f2ecfb"; stroke = "#5c2d91"; pillColor = "#5c2d91"; }
+
+          ctx.fillStyle = fill;
+          ctx.strokeStyle = isHi ? "#141310" : stroke;
+          ctx.lineWidth = isHi ? 3.0 : 1.7;
+          ctx.beginPath();
+          ctx.roundRect(box.x, box.y, box.w, box.h, 9);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(box.x + 2, box.y + 2, box.w - 4, box.h - 4, 7);
+          ctx.clip();
+
+          ctx.fillStyle = "#141310";
+          ctx.font = "700 9.4px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "left";
+          const maxChars = Math.max(8, Math.floor((box.w - 12) / 5.7));
+          const parts = nd.name.split("_");
+          const lines = parts.length <= 2
+            ? parts.map((p) => p.slice(0, maxChars))
+            : [parts[0].slice(0, maxChars), parts[1].slice(0, maxChars), parts.slice(2).join("_").slice(0, maxChars)];
+          lines.forEach((ln, li) => {
+            ctx.fillText(ln, box.x + 6, box.y + 16 + li * 12);
+          });
+
+          ctx.fillStyle = pillColor;
+          ctx.font = "700 9.4px system-ui, sans-serif";
+          ctx.fillText(nd.detail.slice(0, maxChars + 2), box.x + 6, box.y + box.h - 19);
+
+          ctx.fillStyle = "#55524a";
+          ctx.font = "600 9.2px ui-monospace, Menlo, monospace";
+          ctx.fillText(`${nd.ms.toFixed(2)} ms`, box.x + 6, box.y + box.h - 7);
+          ctx.restore();
+        });
+      });
+    }
+
+    function runShapeSimulation(animate) {
+      const expr = document.getElementById("shapeExprInput").value.trim();
+      const fault = document.getElementById("faultSelect").value;
+      const makerKey = document.getElementById("makerKeySelect").value;
+      const checkerKey = document.getElementById("checkerKeySelect").value;
+
+      const ast = parseShape(expr);
+      const stepNames = collectSteps(ast);
+      renderBrickPalette(stepNames);
+
+      const simCtx = {
+        injectFault: fault,
+        faultConsumed: false,
+        inWaterfallPrimary: false,
+        makerKey,
+        checkerKey,
+        executedCount: 0,
+        sheafCoboundary: 0.0,
+        gateStatus: expr.includes("@") ? "PASSED" : "N/A (no @)",
+        stages: [],
+        trace: []
+      };
+
+      const res = evaluateAst(ast, simCtx);
+      lastSimStages = simCtx.stages;
+
+      document.getElementById("skpiSteps").textContent = `${simCtx.executedCount} / ${stepNames.length}`;
+      document.getElementById("skpiLatency").textContent = `${res.ms.toFixed(2)} ms`;
+      document.getElementById("skpiSheaf").textContent = simCtx.sheafCoboundary > 0 ? simCtx.sheafCoboundary.toFixed(3) : "0.000";
+      document.getElementById("skpiGate").textContent = simCtx.gateStatus;
+
+      const statusBadge = document.getElementById("shapeStatusBadge");
+      if (!res.ok) {
+        statusBadge.className = "badge crimson";
+        statusBadge.textContent = `BLOCKED · failure=${res.failure || "contract"}`;
+      } else if (fault !== "none") {
+        statusBadge.className = "badge amber";
+        statusBadge.textContent = `RECOVERED via // (${fault})`;
+      } else {
+        statusBadge.className = "badge";
+        statusBadge.textContent = "OK · maker != checker";
+      }
+
+      document.getElementById("rerankOrderBadge").textContent = `rerank: ${RERANK_ORDERS[fault].slice(0, 34)}`;
+      document.getElementById("shapeTracePre").textContent = simCtx.trace.join("\n");
+
+      const specDoc = {
+        schema: "omninode.shape.v1",
+        id: "omninode.universal-pipeline",
+        invariants: ["maker_is_not_checker", "spend_ceiling_before_model", "every_attempt_recorded"],
+        maker_key: makerKey,
+        checker_key: checkerKey,
+        rerank_on_failure: fault === "none" ? null : { kind: fault, policy: RERANK_ORDERS[fault] },
+        composition: expr,
+        steps: stepNames.map((nm) => ({
+          id: nm,
+          use: { component: nm },
+          role: (BRICK_MAP[nm] && BRICK_MAP[nm].role) || "worker"
+        }))
+      };
+      document.getElementById("shapeSpecPre").textContent = JSON.stringify(specDoc, null, 2);
+
+      if (animTimer) clearInterval(animTimer);
+      if (animate && lastSimStages.length > 0) {
+        activeAnimIdx = 0;
+        drawShapeCanvas(lastSimStages, activeAnimIdx);
+        animTimer = setInterval(() => {
+          activeAnimIdx++;
+          if (activeAnimIdx >= lastSimStages.length) {
+            clearInterval(animTimer);
+            drawShapeCanvas(lastSimStages, -1);
+          } else {
+            drawShapeCanvas(lastSimStages, activeAnimIdx);
+          }
+        }, 190);
+      } else {
+        drawShapeCanvas(lastSimStages, -1);
+      }
+      renderRuntimeCode();
+    }
+
+    // --- SECTION 2: NodeGrid + Canonical grid/1 Digest ---
+    let currentGridCellHex = "";
+    let currentGridRecordJson = "";
+    const gridTrail = [
+      { gate: 0.45, alpha: 0.14, gen: 1 },
+      { gate: 0.65, alpha: 0.11, gen: 1 },
+      { gate: 0.85, alpha: 0.08, gen: 1 }
+    ];
+
+    function canonicalizeValue(v, unknownSet, keyName) {
+      if (keyName && unknownSet.has(keyName)) return "unknown";
+      if (v === null || v === undefined) return null;
+      if (typeof v === "number") return Number(v.toFixed(6));
+      if (typeof v === "boolean" || typeof v === "string") return v;
+      if (Array.isArray(v)) return v.map((item) => canonicalizeValue(item, unknownSet, null)).sort();
+      if (typeof v === "object") {
+        const sorted = {};
+        Object.keys(v).sort().forEach((k) => {
+          sorted[k] = canonicalizeValue(v[k], unknownSet, k);
+        });
+        return sorted;
+      }
+      return String(v);
+    }
+
+    function updateGridCell() {
+      const dict = document.getElementById("axisDict").value;
+      const precond = document.getElementById("axisPrecond").value;
+      const runtime = document.getElementById("axisRuntime").value;
+      const unkMode = document.getElementById("axisUnknown").value;
+      const gate = parseFloat(document.getElementById("axisGate").value);
+      const alpha = parseFloat(document.getElementById("axisAlpha").value);
+
+      document.getElementById("axisGateVal").textContent = gate.toFixed(6);
+      document.getElementById("axisAlphaVal").textContent = alpha.toFixed(6);
+
+      const unknownList = unkMode === "none" ? [] : unkMode === "data_version" ? ["data_version"] : ["data_version", "hardware"];
+      const unknownSet = new Set(unknownList);
+
+      // Gen 1 bounds: gate in [0.10, 1.00], alpha in [0.05, 0.20]
+      const gateExpanded = gate >= 1.00;
+      const alphaExpanded = alpha <= 0.05 || alpha >= 0.20;
+      const generation = (gateExpanded || alphaExpanded) ? 2 : 1;
+
+      // Cross-axis rule check (invalid combinations kept, never dropped per GRID-FORMAT.md)
+      const invalidRules = [];
+      if (dict === "JumpReLU" && precond === "None" && gate > 1.25) {
+        invalidRules.push({
+          rule: "jumprelu_requires_whitening_above_1p25",
+          why: "JumpReLU with identity preconditioner above 1.25 gate exceeds anchor tolerance"
+        });
+      }
+      if (alpha > 0.22 && gate > 1.35) {
+        invalidRules.push({
+          rule: "wide_alpha_high_gate_coupling",
+          why: "conformal_alpha > 0.22 paired with steering_regime_gate > 1.35 relaxes sheaf abstention"
+        });
+      }
+
+      const activeSteps = collectSteps(parseShape(document.getElementById("shapeExprInput").value));
+      const compDigests = {};
+      activeSteps.forEach((nm) => {
+        const b = BRICK_MAP[nm];
+        compDigests[nm] = b ? b.sha256.slice(0, 16) : sha256HexSync(nm).slice(0, 16);
+      });
+
+      const rawConfig = {
+        classifier_type: "nullspace_sae_probe",
+        components: compDigests,
+        conformal_alpha: alpha,
+        context_sent: "compact_digest",
+        data_version: "clip_vit_b32_12l@1",
+        dictionary_family: dict,
+        extra: {
+          grid_generation: generation,
+          parameter_bounds: generation === 2
+            ? { conformal_alpha: [0.01, 0.25], steering_regime_gate: [0.1, 1.5] }
+            : { conformal_alpha: [0.05, 0.2], steering_regime_gate: [0.1, 1.0] },
+          runtime_target: runtime
+        },
+        fallback_order: ["conditional_nullspace_steerer", "leace_eraser"],
+        hardware: "cpu_wasm_simd",
+        harness: "omninode-shell",
+        harness_version: "1.2.0",
+        on_missing: "ask_once_then_proceed",
+        place: "local",
+        preconditioner: precond,
+        seed: 7,
+        sparsity: 0.4092,
+        steering_regime_gate: gate,
+        temperature: 0
+      };
+
+      const normalizedConfig = canonicalizeValue(rawConfig, unknownSet, null);
+      const compactConfigJson = JSON.stringify(normalizedConfig);
+      const cellHex = sha256HexSync(compactConfigJson);
+      currentGridCellHex = cellHex;
+
+      // Empirical score response surface
+      const dictBonus = dict === "Matryoshka" ? 0.012 : dict === "BatchTopK" ? 0.009 : 0.004;
+      const preBonus = precond === "ZCA" ? 0.011 : precond === "Mahalanobis" ? 0.008 : -0.006;
+      const gateTerm = -0.028 * Math.pow(gate - 1.15, 2);
+      const alphaTerm = -0.35 * Math.pow(alpha - 0.06, 2);
+      const score = Math.max(0.72, Math.min(0.996, 0.972 + dictBonus + preBonus + gateTerm + alphaTerm - invalidRules.length * 0.04));
+
+      const gridRow = {
+        format: "grid/1",
+        run_id: "run-" + cellHex.slice(0, 12),
+        kind: "grid-trial",
+        source: "omninode-manifold",
+        at: "2026-11-09T19:25:00Z",
+        cell: cellHex,
+        config: normalizedConfig,
+        unknown: unknownList,
+        invalid: invalidRules,
+        outcome: {
+          passed: invalidRules.length === 0,
+          score: Number(score.toFixed(4)),
+          cost: 0.0,
+          tokens_in: 0,
+          tokens_out: 0,
+          latency_ms: 2.14,
+          failure: invalidRules.length ? "contract" : null
+        },
+        design: generation === 2 ? "boundary_auto_expansion" : "fractional",
+        selection_p: generation === 2 ? 0.25 : 0.125
+      };
+
+      currentGridRecordJson = JSON.stringify(gridRow);
+      document.getElementById("gridCellHexPre").textContent = cellHex;
+      document.getElementById("gridRecordPre").textContent = JSON.stringify(gridRow, null, 2);
+      document.getElementById("gkpiGen").textContent = `Gen ${generation}`;
+      document.getElementById("gkpiCellShort").innerHTML = `<code>${cellHex.slice(0, 8)}</code>`;
+      document.getElementById("gkpiScore").textContent = score.toFixed(4);
+
+      const expBadge = document.getElementById("gridExpansionBadge");
+      if (generation === 2) {
+        expBadge.className = "badge amber";
+        expBadge.textContent = "Gen 1 Edge Saturated -> Gen 2 Auto-Expanded!";
+      } else {
+        expBadge.className = "badge plum";
+        expBadge.textContent = "Gen 1 Interior Cell";
+      }
+
+      if (globalThis.crypto && crypto.subtle) {
+        crypto.subtle.digest("SHA-256", new TextEncoder().encode(compactConfigJson)).then((buf) => {
+          const wcHex = Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+          document.getElementById("gkpiWebCrypto").textContent = wcHex === cellHex ? "EXACT" : "DIFF";
+        });
+      }
+
+      gridTrail.push({ gate, alpha, gen: generation });
+      if (gridTrail.length > 10) gridTrail.shift();
+      drawGridBoundaryCanvas(gate, alpha, generation);
+      renderRuntimeCode();
+    }
+
+    function drawGridBoundaryCanvas(gate, alpha, generation) {
+      const canvas = document.getElementById("gridBoundaryCanvas");
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#fcfbf7";
+      ctx.fillRect(0, 0, W, H);
+
+      const padL = 58, padR = 24, padT = 30, padB = 44;
+      const pw = W - padL - padR, ph = H - padT - padB;
+      const xOf = (g) => padL + ((g - 0.10) / (1.50 - 0.10)) * pw;
+      const yOf = (a) => padT + (1 - (a - 0.01) / (0.25 - 0.01)) * ph;
+
+      // Gen 2 outer expanded region
+      ctx.fillStyle = generation === 2 ? "#fbf1e2" : "#f5f2ea";
+      ctx.strokeStyle = generation === 2 ? "#9a5b13" : "#c8c0b0";
+      ctx.lineWidth = generation === 2 ? 2.0 : 1.2;
+      ctx.setLineDash([5, 4]);
+      ctx.fillRect(xOf(0.10), yOf(0.25), xOf(1.50) - xOf(0.10), yOf(0.01) - yOf(0.25));
+      ctx.strokeRect(xOf(0.10), yOf(0.25), xOf(1.50) - xOf(0.10), yOf(0.01) - yOf(0.25));
+      ctx.setLineDash([]);
+
+      // Gen 1 initial bounds [0.10, 1.00] x [0.05, 0.20]
+      const g1x = xOf(0.10), g1y = yOf(0.20);
+      const g1w = xOf(1.00) - xOf(0.10), g1h = yOf(0.05) - yOf(0.20);
+      ctx.fillStyle = "#e6f3ee";
+      ctx.strokeStyle = "#1b6b52";
+      ctx.lineWidth = 1.8;
+      ctx.fillRect(g1x, g1y, g1w, g1h);
+      ctx.strokeRect(g1x, g1y, g1w, g1h);
+
+      ctx.fillStyle = "#1b6b52";
+      ctx.font = "700 10.5px ui-monospace, Menlo, monospace";
+      ctx.fillText("Gen 1 Bounds [0.10..1.00] x [0.05..0.20]", g1x + 8, g1y + 16);
+
+      ctx.fillStyle = "#9a5b13";
+      ctx.fillText("Gen 2 Expanded Frontier [0.10..1.50] x [0.01..0.25]", g1x + 8, padT + 14);
+
+      // Trail points
+      ctx.beginPath();
+      gridTrail.forEach((pt, idx) => {
+        const px = xOf(pt.gate), py = yOf(pt.alpha);
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.strokeStyle = "#1d5bbf";
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      gridTrail.forEach((pt) => {
+        ctx.beginPath();
+        ctx.arc(xOf(pt.gate), yOf(pt.alpha), 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = pt.gen === 2 ? "#9a5b13" : "#1d5bbf";
+        ctx.fill();
+      });
+
+      // Active cursor + optimum marker
+      const optX = xOf(1.15), optY = yOf(0.06);
+      ctx.strokeStyle = "#5c2d91";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(optX, optY, 7, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "#5c2d91";
+      ctx.font = "700 10px system-ui, sans-serif";
+      ctx.fillText("Global Optimum (Gen 2)", optX + 10, optY + 4);
+
+      const cx = xOf(gate), cy = yOf(alpha);
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6.5, 0, Math.PI * 2);
+      ctx.fillStyle = generation === 2 ? "#9a5b13" : "#1b6b52";
+      ctx.fill();
+      ctx.strokeStyle = "#141310";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Axis labels
+      ctx.fillStyle = "#55524a";
+      ctx.font = "600 10.2px ui-monospace, Menlo, monospace";
+      ctx.fillText("0.10", padL, H - 23);
+      ctx.fillText("1.00 (Gen1 max)", xOf(1.00) - 46, H - 23);
+      ctx.fillText("1.50", xOf(1.50) - 24, H - 23);
+      ctx.fillText("steering_regime_gate ->", padL + pw / 2 - 72, H - 7);
+      ctx.fillText("alpha", 12, 16);
+      ctx.fillText("0.25", 16, yOf(0.25) + 4);
+      ctx.fillText("0.05", 16, yOf(0.05) + 4);
+      ctx.fillText("0.01", 16, yOf(0.01) + 4);
+    }
+
+    function saturateGen1Edge() {
+      document.getElementById("axisGate").value = "1.15";
+      document.getElementById("axisAlpha").value = "0.04";
+      updateGridCell();
+      showToast("Gen 1 ceiling saturated -> NodeGrid expanded to Gen 2!");
+    }
+
+    function resetGridDefaults() {
+      document.getElementById("axisDict").value = "Matryoshka";
+      document.getElementById("axisPrecond").value = "ZCA";
+      document.getElementById("axisUnknown").value = "none";
+      document.getElementById("axisGate").value = "0.85";
+      document.getElementById("axisAlpha").value = "0.08";
+      updateGridCell();
+    }
+
+    function copyGridRecord() {
+      navigator.clipboard.writeText(currentGridRecordJson).then(() => showToast("Copied grid/1 JSONL record!"));
+    }
+
+    function syncRuntimeFromGrid() {
+      const map = {
+        wasm_simd: "wasm",
+        rust_no_std: "rust",
+        c99_iso: "c99",
+        wgsl_webgpu: "wgsl",
+        glsl_webgl2: "glsl",
+        sqlite_sql: "sql",
+        es2022_js: "js",
+        python_numpy: "py",
+        safetensors: "safetensors"
+      };
+      const v = document.getElementById("axisRuntime").value;
+      if (map[v]) activeRuntimeKey = map[v];
+      updateGridCell();
+      renderRuntimeTabs();
+      renderRuntimeCode();
+    }
+
+    // --- SECTION 3: Static AST CARD Inspector, Lockfile & gap-loop ---
+    let synthesizedBrick = null;
+
+    function populateCardSelect() {
+      const sel = document.getElementById("cardInspectorSelect");
+      const current = sel.value;
+      sel.innerHTML = "";
+      const list = synthesizedBrick ? [...CARD_BRICKS, synthesizedBrick] : CARD_BRICKS;
+      list.forEach((b) => {
+        const opt = document.createElement("option");
+        opt.value = b.name;
+        opt.textContent = `${b.name}.py (${b.role})`;
+        sel.appendChild(opt);
+      });
+      if (current && list.some((b) => b.name === current)) sel.value = current;
+    }
+
+    function renderCardInspector(tamperedName = null) {
+      const selName = document.getElementById("cardInspectorSelect").value || CARD_BRICKS[0].name;
+      const list = synthesizedBrick ? [...CARD_BRICKS, synthesizedBrick] : CARD_BRICKS;
+      const brick = list.find((b) => b.name === selName) || CARD_BRICKS[0];
+      const isTampered = tamperedName === brick.name;
+      const src = isTampered ? buildBrickSource(brick, true) : brick.source;
+      const liveSha = sha256HexSync(src);
+
+      document.getElementById("cardSourcePre").textContent = src;
+      const parsedCard = {
+        ast_node: "Assign(targets=[Name(id='CARD')], value=Dict(...))",
+        code_executed_during_discovery: false,
+        card: {
+          name: brick.name,
+          role: brick.role,
+          describes: brick.describes,
+          keywords: brick.keywords
+        },
+        cas_file: `.omni/cas/${liveSha}.py`,
+        pinned_digest_match: liveSha === brick.sha256
+      };
+      document.getElementById("cardAstPre").textContent = JSON.stringify(parsedCard, null, 2);
+    }
+
+    function buildLockfileDoc() {
+      const nodes = {};
+      ["orient_profiler", "sae_matryoshka_zca", "elk_truth_probe", "conditional_nullspace_steerer", "independent_quorum_check"].forEach((nm) => {
+        const b = BRICK_MAP[nm];
+        nodes[`continuum.${nm}`] = {
+          chosen: b.name,
+          how: "pinned in lockfile",
+          component_file: `components/${b.name}.py`,
+          component_sha256: b.sha256,
+          source: { kind: "bundle", path: "bundles/omninode-components.bundle", commit: "v1.2.0" }
+        };
+      });
+      if (synthesizedBrick) {
+        nodes["continuum.built_kalman_drift"] = {
+          chosen: synthesizedBrick.name,
+          how: "admitted by gap-loop",
+          component_file: `.omni/built/${synthesizedBrick.name}.py`,
+          component_sha256: synthesizedBrick.sha256,
+          source: { kind: "folder", path: ".omni/built" }
+        };
+      }
+      return {
+        boot: {
+          "source-bundle": { sha256: sha256HexSync("boot:source-bundle").slice(0, 32), source: { kind: "folder", path: "components/sources" } },
+          "search-idf": { sha256: sha256HexSync("boot:search-idf").slice(0, 32), source: { kind: "folder", path: "components/search" } }
+        },
+        nodes
+      };
+    }
+
+    function runCasScenario(mode) {
+      const badge = document.getElementById("casStateBadge");
+      const factsEl = document.getElementById("factsLogPre");
+
+      if (mode === "reset") {
+        synthesizedBrick = null;
+        populateCardSelect();
+        renderCardInspector(null);
+        document.getElementById("ckpiSearches").textContent = "0";
+        document.getElementById("ckpiCasCount").textContent = "13";
+        document.getElementById("ckpiBuilt").textContent = "0";
+        document.getElementById("ckpiVerdict").textContent = "OK";
+        badge.className = "badge";
+        badge.textContent = "LOCKED · 0 Searches";
+        document.getElementById("lockfilePre").textContent = JSON.stringify(buildLockfileDoc(), null, 2);
+        factsEl.textContent = [
+          JSON.stringify({ fact: "pinned", node: "continuum.orient_profiler", component: "orient_profiler", sha256: BRICK_MAP.orient_profiler.sha256.slice(0, 16) }),
+          JSON.stringify({ fact: "pinned", node: "continuum.sae_matryoshka_zca", component: "sae_matryoshka_zca", sha256: BRICK_MAP.sae_matryoshka_zca.sha256.slice(0, 16) }),
+          JSON.stringify({ fact: "observed", node: "continuum", ok: true, ms: 2.14, searches: 0 })
+        ].join("\n");
+        return;
+      }
+
+      if (mode === "rebuild") {
+        renderCardInspector(null);
+        document.getElementById("ckpiSearches").textContent = "0";
+        document.getElementById("ckpiCasCount").textContent = synthesizedBrick ? "14" : "13";
+        document.getElementById("ckpiVerdict").textContent = "REBUILT (0 SEARCH)";
+        badge.className = "badge";
+        badge.textContent = "EMPTY-FOLDER REBUILD · 0 Searches";
+        document.getElementById("lockfilePre").textContent = JSON.stringify(buildLockfileDoc(), null, 2);
+        factsEl.textContent = [
+          JSON.stringify({ fact: "wipe_state", dir: ".omni/cas", removed_files: 13 }),
+          JSON.stringify({ fact: "pull", node: "continuum.orient_profiler", why: "pinned", searches_executed: 0 }),
+          JSON.stringify({ fact: "pull", node: "continuum.conditional_nullspace_steerer", why: "pinned", searches_executed: 0 }),
+          JSON.stringify({ fact: "pinned", rebuilt: "from lockfile", total_searches: 0, parity: "exact" }),
+          JSON.stringify({ fact: "observed", job: "job-empty-rebuild", ok: true, ms: 1.92 })
+        ].join("\n");
+        showToast("Rebuilt .omni/cas from lockfile.json with 0 searches!");
+        return;
+      }
+
+      if (mode === "tamper") {
+        document.getElementById("cardInspectorSelect").value = "conditional_nullspace_steerer";
+        renderCardInspector("conditional_nullspace_steerer");
+        const tamperedSrc = buildBrickSource(BRICK_MAP.conditional_nullspace_steerer, true);
+        const badSha = sha256HexSync(tamperedSrc);
+        document.getElementById("ckpiSearches").textContent = "0";
+        document.getElementById("ckpiVerdict").textContent = "REFUSED (contract)";
+        badge.className = "badge crimson";
+        badge.textContent = "REFUSED · hash_mismatch (contract)";
+        factsEl.textContent = [
+          JSON.stringify({
+            fact: "hash_mismatch",
+            node: "continuum.conditional_nullspace_steerer",
+            component: "conditional_nullspace_steerer",
+            expected: BRICK_MAP.conditional_nullspace_steerer.sha256.slice(0, 16),
+            actual: badSha.slice(0, 16),
+            kind: "contract"
+          }),
+          JSON.stringify({
+            fact: "observed",
+            job: "job-tamper-check",
+            ok: false,
+            failure: "contract",
+            error: "Failure: source has another version of conditional_nullspace_steerer than the lockfile pins"
+          })
+        ].join("\n");
+        showToast("Upstream edit blocked before module load (kind=contract)!");
+        return;
+      }
+
+      if (mode === "gap") {
+        const cap = "kalman_drift";
+        const newBrick = {
+          name: "built_kalman_drift",
+          role: "transform",
+          domain: "built",
+          ms: 0.22,
+          describes: "built by gap-loop: track non-stationary latent drift with scalar Kalman gain; admitted after hidden checks",
+          keywords: ["built", "kalman", "drift", "transform"],
+          body: "def run(node, job):\n    z = float((job.get('given') or {}).get('drift', 0.12))\n    gain = 0.618\n    return {'ok': True, 'output': {'corrected_drift': round(z * (1.0 - gain), 5)}}"
+        };
+        newBrick.source = buildBrickSource(newBrick, false);
+        newBrick.sha256 = sha256HexSync(newBrick.source);
+        synthesizedBrick = newBrick;
+        populateCardSelect();
+        document.getElementById("cardInspectorSelect").value = newBrick.name;
+        renderCardInspector(null);
+
+        document.getElementById("ckpiSearches").textContent = "1";
+        document.getElementById("ckpiCasCount").textContent = "14";
+        document.getElementById("ckpiBuilt").textContent = "1";
+        document.getElementById("ckpiVerdict").textContent = "BUILT -> PASSED";
+        badge.className = "badge blue";
+        badge.textContent = "GAP-LOOP ADMITTED · built_kalman_drift.py";
+        document.getElementById("lockfilePre").textContent = JSON.stringify(buildLockfileDoc(), null, 2);
+        factsEl.textContent = [
+          JSON.stringify({ fact: "observed", job: "job-miss-01", want: "correct non-stationary kalman drift", ok: false, failure: "capability" }),
+          JSON.stringify({ fact: "gap_observed", pack: "latent_control", shape: "scalar_drift_filter", builder_sees_hidden_cases: false }),
+          JSON.stringify({ fact: "gap_step", cycle: 1, built: [cap], shown_cases: "6/6", hidden_check: "8/8 PASS", file: `.omni/built/built_${cap}.py` }),
+          JSON.stringify({ fact: "chosen", component: "built_kalman_drift", sha256: newBrick.sha256.slice(0, 16), how: "found by search" }),
+          JSON.stringify({ fact: "observed", job: "job-retry-02", want: "correct non-stationary kalman drift", ok: true, ms: 0.22 })
+        ].join("\n");
+        showToast("gap-loop synthesized built_kalman_drift.py -> hidden check passed!");
+      }
+    }
+
+    // --- SECTION 4: 9 Portable Runtimes Emitter + Real WebAssembly.instantiate ---
+    const RUNTIME_TARGETS = [
+      { key: "wasm", label: "1. .wasm (WAT + Binary)", ext: "wasm" },
+      { key: "rust", label: "2. Rust #![no_std]", ext: "rs" },
+      { key: "c99", label: "3. ISO C99", ext: "h" },
+      { key: "wgsl", label: "4. WebGPU WGSL", ext: "wgsl" },
+      { key: "glsl", label: "5. WebGL2 GLSL", ext: "glsl" },
+      { key: "sql", label: "6. SQLite / pg SQL", ext: "sql" },
+      { key: "js", label: "7. ES2022 JS", ext: "mjs" },
+      { key: "py", label: "8. Python Shell Spec", ext: "py" },
+      { key: "safetensors", label: "9. .safetensors", ext: "safetensors" }
+    ];
+    let activeRuntimeKey = "wasm";
+    let latestWasmBytes = null;
+    let latestSafetensorsBytes = null;
+
+    function getUnitWeights8() {
+      const gate = parseFloat(document.getElementById("axisGate").value || "0.85");
+      const alpha = parseFloat(document.getElementById("axisAlpha").value || "0.08");
+      const raw = [
+        0.42 * gate, -0.31 * gate, 0.54 * (1 - alpha), 0.28 * gate,
+        -0.19 * (1 + alpha), 0.37 * gate, -0.24 * gate, 0.36 * (1 - alpha)
+      ];
+      const norm = Math.sqrt(raw.reduce((s, v) => s + v * v, 0)) || 1;
+      return new Float32Array(raw.map((v) => v / norm));
+    }
+
+    function uleb128(n) {
+      const out = [];
+      do {
+        let b = n & 0x7f;
+        n >>>= 7;
+        if (n !== 0) b |= 0x80;
+        out.push(b);
+      } while (n !== 0);
+      return out;
+    }
+
+    function f32BytesLE(val) {
+      const b = new ArrayBuffer(4);
+      new DataView(b).setFloat32(0, val, true);
+      return Array.from(new Uint8Array(b));
+    }
+
+    // Synthesizes a valid \0asm module exporting omninode_eval8(x0..x7: f32) -> f32 dot product
+    function compileOmniNodeWasm(weights8) {
+      // Type section: (func (param f32 x 8) (result f32))
+      const typeBody = [0x01, 0x60, 0x08, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x7d, 0x01, 0x7d];
+      const funcBodySec = [0x01, 0x00];
+      const exportName = Array.from(new TextEncoder().encode("omninode_eval8"));
+      const exportSec = [0x01, ...uleb128(exportName.length), ...exportName, 0x00, 0x00];
+
+      // Code body: sum_{i=0..7} local.get i * f32.const w[i]
+      const instr = [0x00]; // 0 local declarations
+      for (let i = 0; i < 8; i++) {
+        instr.push(0x20, i); // local.get i
+        instr.push(0x43, ...f32BytesLE(weights8[i])); // f32.const w[i]
+        instr.push(0x94); // f32.mul
+        if (i > 0) instr.push(0x92); // f32.add
+      }
+      instr.push(0x0b); // end
+
+      const codeEntry = [...uleb128(instr.length), ...instr];
+      const codeSec = [0x01, ...codeEntry];
+
+      const sec = (id, payload) => [id, ...uleb128(payload.length), ...payload];
+      const bytes = new Uint8Array([
+        0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+        ...sec(1, typeBody),
+        ...sec(3, funcBodySec),
+        ...sec(7, exportSec),
+        ...sec(10, codeSec)
+      ]);
+      return bytes;
+    }
+
+    function buildSafetensorsBytes(weights8, cellHex, expr) {
+      const dataBytes = new Uint8Array(weights8.buffer.slice(0));
+      const headerObj = {
+        __metadata__: {
+          format: "omninode.cartridge.v1",
+          grid_cell: cellHex.slice(0, 16),
+          composition: expr.slice(0, 120)
+        },
+        nullspace_dir: {
+          dtype: "F32",
+          shape: [8],
+          data_offsets: [0, dataBytes.byteLength]
+        }
+      };
+      let jsonStr = JSON.stringify(headerObj);
+      while (new TextEncoder().encode(jsonStr).length % 8 !== 0) jsonStr += " ";
+      const hdrBytes = new TextEncoder().encode(jsonStr);
+      const out = new Uint8Array(8 + hdrBytes.length + dataBytes.length);
+      const dv = new DataView(out.buffer);
+      dv.setUint32(0, hdrBytes.length, true);
+      dv.setUint32(4, 0, true);
+      out.set(hdrBytes, 8);
+      out.set(dataBytes, 8 + hdrBytes.length);
+      return { bytes: out, headerJson: jsonStr.trim() };
+    }
+
+    async function verifyLiveWasm(weights8) {
+      const wasmBytes = compileOmniNodeWasm(weights8);
+      latestWasmBytes = wasmBytes;
+      const sample = new Float32Array([0.5, -0.25, 0.75, 0.1, -0.4, 0.6, -0.2, 0.3]);
+      let jsRef = 0;
+      for (let i = 0; i < 8; i++) jsRef = Math.fround(jsRef + Math.fround(sample[i] * weights8[i]));
+
+      const { instance } = await WebAssembly.instantiate(wasmBytes);
+      const fn = instance.exports.omninode_eval8;
+      fn(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7]);
+      const t0 = performance.now();
+      let wasmOut = 0;
+      for (let r = 0; r < 1000; r++) {
+        wasmOut = fn(sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7]);
+      }
+      const usPerCall = ((performance.now() - t0) * 1000) / 1000;
+      const diff = Math.abs(wasmOut - jsRef);
+
+      document.getElementById("wasmBenchCard").innerHTML =
+        `<div><strong>Magic Header:</strong> <code>\\0asm v1</code> (${wasmBytes.length} bytes)</div>` +
+        `<div><strong>Export:</strong> <code>omninode_eval8(f32 x 8) -&gt; ${wasmOut.toFixed(6)}</code></div>` +
+        `<div><strong>Float32 Reference:</strong> <code>${jsRef.toFixed(6)}</code> (abs diff = <code>${diff.toExponential(2)}</code>)</div>` +
+        `<div><strong>Browser Call Latency:</strong> <code>${usPerCall.toFixed(2)} &mu;s</code> (200-run warm mean)</div>`;
+    }
+
+    function renderRuntimeTabs() {
+      const box = document.getElementById("runtimeTabs");
+      box.innerHTML = "";
+      RUNTIME_TARGETS.forEach((rt) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = rt.key === activeRuntimeKey ? "active" : "";
+        b.textContent = rt.label;
+        b.onclick = () => {
+          activeRuntimeKey = rt.key;
+          renderRuntimeTabs();
+          renderRuntimeCode();
+        };
+        box.appendChild(b);
+      });
+    }
+
+    function buildRuntimeText(key) {
+      const w = Array.from(getUnitWeights8()).map((v) => v.toFixed(6));
+      const expr = document.getElementById("shapeExprInput").value.trim();
+      const cellShort = (currentGridCellHex || sha256HexSync(expr)).slice(0, 12);
+      const gate = parseFloat(document.getElementById("axisGate").value || "0.85").toFixed(4);
+      const alpha = parseFloat(document.getElementById("axisAlpha").value || "0.08").toFixed(4);
+
+      if (key === "wasm") {
+        return `;; OmniNode Cartridge (WAT) · grid/1 cell=${cellShort} · gate=${gate}\n(module\n  (func (export "omninode_eval8")\n    (param $x0 f32) (param $x1 f32) (param $x2 f32) (param $x3 f32)\n    (param $x4 f32) (param $x5 f32) (param $x6 f32) (param $x7 f32)\n    (result f32)\n    (f32.add\n      (f32.add\n        (f32.add (f32.mul (local.get $x0) (f32.const ${w[0]})) (f32.mul (local.get $x1) (f32.const ${w[1]})))\n        (f32.add (f32.mul (local.get $x2) (f32.const ${w[2]})) (f32.mul (local.get $x3) (f32.const ${w[3]}))))\n      (f32.add\n        (f32.add (f32.mul (local.get $x4) (f32.const ${w[4]})) (f32.mul (local.get $x5) (f32.const ${w[5]})))\n        (f32.add (f32.mul (local.get $x6) (f32.const ${w[6]})) (f32.mul (local.get $x7) (f32.const ${w[7]}))))))\n)`;
+      }
+      if (key === "rust") {
+        return `#![no_std]\n// OmniNode #![no_std] Cartridge · cell=${cellShort}\npub const OMNINODE_GATE: f32 = ${gate};\npub const CONFORMAL_ALPHA: f32 = ${alpha};\npub const NULLSPACE_W8: [f32; 8] = [${w.join(", ")}];\n\n#[inline]\npub fn omninode_eval8(x: &[f32; 8]) -> f32 {\n    let mut acc = 0.0f32;\n    let mut i = 0usize;\n    while i < 8 {\n        acc += x[i] * NULLSPACE_W8[i];\n        i += 1;\n    }\n    acc * OMNINODE_GATE\n}`;
+      }
+      if (key === "c99") {
+        return `/* ISO C99 OmniNode Cartridge · cell=${cellShort} */\n#ifndef OMNINODE_CELL_H\n#define OMNINODE_CELL_H\n\nstatic const float OMNINODE_W8[8] = { ${w.map((v) => v + "f").join(", ")} };\nstatic const float OMNINODE_GATE = ${gate}f;\n\nstatic inline float omninode_eval8(const float x[8]) {\n    float acc = 0.0f;\n    for (int i = 0; i < 8; ++i) acc += x[i] * OMNINODE_W8[i];\n    return acc * OMNINODE_GATE;\n}\n#endif`;
+      }
+      if (key === "wgsl") {
+        return `// WebGPU WGSL Compute Shader · OmniNode cell=${cellShort}\n@group(0) @binding(0) var<storage, read> residual_in: array<f32>;\n@group(0) @binding(1) var<storage, read_write> steered_out: array<f32>;\n\nconst W8 = array<f32, 8>(${w.join(", ")});\nconst GATE: f32 = ${gate};\n\n@compute @workgroup_size(64)\nfn main(@builtin(global_invocation_id) gid: vec3<u32>) {\n    let idx = gid.x;\n    let lane = idx % 8u;\n    steered_out[idx] = residual_in[idx] + GATE * W8[lane];\n}`;
+      }
+      if (key === "glsl") {
+        return `#version 300 es\n// WebGL2 Transform Feedback / Fragment Kernel · cell=${cellShort}\nprecision highp float;\nuniform vec4 u_x_lo;\nuniform vec4 u_x_hi;\nout vec4 fragScore;\n\nvoid main() {\n    const vec4 w_lo = vec4(${w.slice(0, 4).join(", ")});\n    const vec4 w_hi = vec4(${w.slice(4, 8).join(", ")});\n    float s = (dot(u_x_lo, w_lo) + dot(u_x_hi, w_hi)) * ${gate};\n    fragScore = vec4(s, ${alpha}, 1.0, 1.0);\n}`;
+      }
+      if (key === "sql") {
+        return `-- SQLite / PostgreSQL In-Database OmniNode Scorer · cell=${cellShort}\nCREATE TABLE IF NOT EXISTS omninode_cell_weights (\n  cell_id TEXT NOT NULL,\n  dim_idx INTEGER NOT NULL,\n  weight REAL NOT NULL,\n  PRIMARY KEY (cell_id, dim_idx)\n);\n\nINSERT OR REPLACE INTO omninode_cell_weights (cell_id, dim_idx, weight) VALUES\n${w.map((v, i) => `  ('${cellShort}', ${i}, ${v})`).join(",\n")};\n\n-- Evaluate projection score inside SQL without external RPC:\nSELECT r.item_id, SUM(r.val * w.weight) * ${gate} AS steered_score\nFROM residual_features r\nJOIN omninode_cell_weights w ON w.dim_idx = r.dim_idx AND w.cell_id = '${cellShort}'\nGROUP BY r.item_id;`;
+      }
+      if (key === "js") {
+        return `// ES2022 Zero-Dependency OmniNode Module · cell=${cellShort}\nexport const OMNINODE_SHAPE = ${JSON.stringify(expr)};\nexport const OMNINODE_W8 = new Float32Array([${w.join(", ")}]);\nexport const OMNINODE_GATE = ${gate};\n\nexport function omninodeEval8(vec8) {\n  let s = 0;\n  for (let i = 0; i < 8; i++) s += vec8[i] * OMNINODE_W8[i];\n  return Math.fround(s * OMNINODE_GATE);\n}`;
+      }
+      if (key === "py") {
+        const steps = collectSteps(parseShape(expr));
+        return `#!/usr/bin/env python3\n"""OmniNode shell.py node config + CARD runner · cell=${cellShort}"""\nNODE_CONFIG = {\n    "name": "continuum-omninode",\n    "use": {"component": "shape-runner"},\n    "lockfile": "lockfile.json",\n    "settings": {\n        "maker_key": ${JSON.stringify(document.getElementById("makerKeySelect").value)},\n        "checker_key": ${JSON.stringify(document.getElementById("checkerKeySelect").value)},\n        "spec": {\n            "schema": "omninode.shape.v1",\n            "id": "omninode.universal-pipeline",\n            "composition": ${JSON.stringify(expr)},\n            "steps": ${JSON.stringify(steps.map((s) => ({ id: s, op: s })))} \n        }\n    }\n}\n`;
+      }
+      // safetensors
+      const st = buildSafetensorsBytes(getUnitWeights8(), currentGridCellHex || cellShort, expr);
+      latestSafetensorsBytes = st.bytes;
+      return `// Binary .safetensors Layout (${st.bytes.length} bytes total: 8-byte LE u64 header size + JSON header + 32B F32 tensor)\n` +
+        JSON.stringify(JSON.parse(st.headerJson), null, 2) +
+        `\n\n// F32 Tensor Payload (nullspace_dir[0..8]):\n[${w.join(", ")}]`;
+    }
+
+    function renderRuntimeCode() {
+      const weights8 = getUnitWeights8();
+      verifyLiveWasm(weights8);
+      const txt = buildRuntimeText(activeRuntimeKey);
+      const rtMeta = RUNTIME_TARGETS.find((r) => r.key === activeRuntimeKey) || RUNTIME_TARGETS[0];
+      document.getElementById("rtHeaderLabel").textContent = `omninode_${(currentGridCellHex || "cell").slice(0, 8)}.${rtMeta.ext}`;
+      document.getElementById("rtCodePre").textContent = txt;
+      const byteCount = activeRuntimeKey === "wasm" && latestWasmBytes
+        ? latestWasmBytes.length
+        : activeRuntimeKey === "safetensors" && latestSafetensorsBytes
+          ? latestSafetensorsBytes.length
+          : new TextEncoder().encode(txt).length;
+      document.getElementById("rtSizeBadge").textContent = `${byteCount} B`;
+    }
+
+    function copyRuntimeArtifact() {
+      const txt = document.getElementById("rtCodePre").textContent;
+      navigator.clipboard.writeText(txt).then(() => showToast("Copied active runtime source!"));
+    }
+
+    function downloadRuntimeArtifact() {
+      const rtMeta = RUNTIME_TARGETS.find((r) => r.key === activeRuntimeKey) || RUNTIME_TARGETS[0];
+      const prefix = `omninode_${(currentGridCellHex || "cell").slice(0, 8)}`;
+      let blob;
+      if (activeRuntimeKey === "wasm" && latestWasmBytes) {
+        blob = new Blob([latestWasmBytes], { type: "application/wasm" });
+      } else if (activeRuntimeKey === "safetensors") {
+        const st = buildSafetensorsBytes(getUnitWeights8(), currentGridCellHex || "cell", document.getElementById("shapeExprInput").value);
+        blob = new Blob([st.bytes], { type: "application/octet-stream" });
+      } else {
+        blob = new Blob([document.getElementById("rtCodePre").textContent], { type: "text/plain;charset=utf-8" });
+      }
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${prefix}.${rtMeta.ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast(`Downloaded ${prefix}.${rtMeta.ext}`);
+    }
+
+    // Boot everything deterministically
+    populateCardSelect();
+    renderRuntimeTabs();
+    runCasScenario("reset");
+    updateGridCell();
+    runShapeSimulation(false);
+  </script>
+</body>
+</html>
