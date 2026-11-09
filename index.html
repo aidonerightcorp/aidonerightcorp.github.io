@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="only light">
+  <title>Weight-Space Programming on Atomic Task Graphs · Research &amp; Interactive Atlas</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --paper: #f5f2ea;
+      --card: #fcfbf7;
+      --card-alt: #eee9dd;
+      --ink: #1e2229;
+      --muted: #555e6b;
+      --line: #d5cdbe;
+      --teal: #1b6b52;
+      --teal-soft: #e6f3ee;
+      --blue: #1d5bbf;
+      --blue-soft: #e8f0fc;
+      --plum: #5c2d91;
+      --plum-soft: #f2ecfb;
+      --amber: #9a5b13;
+      --amber-soft: #fbf1e2;
+      --crimson: #9e2f2f;
+      --crimson-soft: #fbeaea;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.56;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 26px 22px 68px; }
+    .topnav {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      justify-content: space-between; padding-bottom: 14px;
+      border-bottom: 1px solid var(--line); margin-bottom: 22px;
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .nav-pill {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; background: var(--card);
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .nav-pill.active {
+      background: var(--teal-soft); border-color: var(--teal); color: var(--teal);
+    }
+    .eyebrow {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      background: var(--teal-soft); border: 1px solid #b6decb;
+      color: var(--teal); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    h1 {
+      font-family: var(--serif); font-size: clamp(29px, 3.4vw, 42px);
+      line-height: 1.15; margin: 4px 0 12px; letter-spacing: -0.015em;
+    }
+    h2 { font-family: var(--serif); font-size: 23px; margin: 0 0 8px; }
+    h3 { font-size: 17px; margin: 0 0 6px; }
+    .lede { font-size: 17px; color: var(--muted); max-width: 980px; margin: 0 0 22px; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 22px;
+    }
+    .portal-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 14px; margin-bottom: 22px;
+    }
+    .portal-card {
+      display: block; background: #ffffff; border: 1px solid var(--line);
+      border-radius: 13px; padding: 18px 20px; color: var(--ink);
+      transition: transform 0.12s ease, border-color 0.12s ease;
+    }
+    .portal-card:hover {
+      text-decoration: none; border-color: var(--teal); transform: translateY(-1px);
+    }
+    .portal-card .tag {
+      display: inline-block; font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 3px 9px; border-radius: 999px; margin-bottom: 8px;
+      background: var(--teal-soft); color: var(--teal);
+    }
+    .portal-card.blue .tag { background: var(--blue-soft); color: var(--blue); }
+    .portal-card.plum .tag { background: var(--plum-soft); color: var(--plum); }
+    .portal-card.amber .tag { background: var(--amber-soft); color: var(--amber); }
+    .portal-card h3 { font-size: 18px; margin: 0 0 6px; color: var(--ink); }
+    .portal-card p { font-size: 14px; color: var(--muted); margin: 0 0 10px; }
+    .portal-card .open-link { font-size: 13px; font-weight: 700; color: var(--blue); font-family: var(--mono); }
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 13px; margin-bottom: 22px;
+    }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 15px 17px;
+    }
+    .kpi .val { font-size: 25px; font-weight: 800; color: var(--teal); font-family: var(--mono); }
+    .kpi .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+    th, td { text-align: left; padding: 10px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: var(--card-alt); font-weight: 700; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    code {
+      font-family: var(--mono); font-size: 12.8px; background: var(--card-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+    .fig-card {
+      background: #ffffff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px; margin-top: 14px;
+    }
+    .fig-card img { width: 100%; height: auto; display: block; border-radius: 8px; }
+    .fig-cap { font-size: 13px; color: var(--muted); margin-top: 8px; }
+    .footer {
+      margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap;
+      justify-content: space-between; gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topnav">
+      <div class="nav-links">
+        <a class="nav-pill active" href="index.html">Research Portal</a>
+        <a class="nav-pill" href="weight-space.html">Weight-Space Findings</a>
+        <a class="nav-pill" href="atomic-graph-explorer.html">Atomic Graph &amp; Symbolic Lab</a>
+        <a class="nav-pill" href="onet-weight-atlas.html">18,838-Task O*NET Atlas</a>
+        <a class="nav-pill" href="omni-fabric.html">Omni-Fabric v0.3.0</a>
+        <a class="nav-pill" href="quorum-forge.html">QuorumForge Swarm</a>
+        <a class="nav-pill" href="hermes-submission.html">Hermes Plugin Brief</a>
+      </div>
+      <a class="nav-pill" href="assets/weight_space_benchmark_results.json">Download 5-Seed JSON</a>
+    </nav>
+
+    <div class="eyebrow">Empirical Weight-Space Systems Research &middot; 5-Seed Matched Controls</div>
+    <h1>Why Whole-Model Weight Edits Stall &mdash; and Why Atomic Task Graphs Unlock Weight-Space Programming</h1>
+    <p class="lede">
+      Sparse weight edits on monolithic multi-step benchmarks often collapse onto the unedited <code>thinking=off</code>
+      direct-answer baseline (<code>51.60% &plusmn; 3.11%</code> vs <code>51.84% &plusmn; 3.31%</code> across 5 seeds; paired
+      <code>&Delta; = -0.24 pp</code>). Decomposing workloads into check-gated <strong>atomic node graphs</strong>
+      (<code>r_eff = 3.0</code>), inducing <strong>symbolic invariant skeletons</strong>, and projecting residuals into the
+      <strong>orthogonal SVD nullspace</strong> unlocks <strong><code>98.96% &plusmn; 0.25%</code></strong> atomic accuracy
+      (<code>+47.36 pp</code> over <code>thinking=off</code>), <strong><code>256-byte</code></strong> rank-8 task cartridges,
+      and <strong><code>20.14x</code></strong> speculative worker bundle throughput.
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="val">+47.36 pp</div>
+        <div class="lbl">Atomic 32-node graph gain over matched <code>thinking=off</code> control (<code>98.96% &plusmn; 0.25%</code> vs <code>51.60%</code>)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">99.60% &plusmn; 0.14%</div>
+        <div class="lbl">Neuro-symbolic skeleton + orthogonal SVD nullspace OOD holdout accuracy (<code>0.0%</code> rule violations)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">256 Bytes</div>
+        <div class="lbl">Per-skill <code>LoRA-XS</code> subspace cartridge; all <code>2,087</code> O*NET DWAs fit in <code>521.75 KiB</code> L2 cache</div>
+      </div>
+      <div class="kpi">
+        <div class="val">20.14x / -96.1%</div>
+        <div class="lbl">Speculative <code>k=4</code> maker-checker bundle speedup &amp; LLM token reduction (<code>23.0</code> vs <code>588.0</code> tokens/task)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">121,565 Atoms</div>
+        <div class="lbl">Decomposed occupational &amp; benchmark tasks across <code>1,016</code> O*NET roles &amp; <code>18,838</code> task statements</div>
+      </div>
+    </div>
+
+    <div class="portal-grid">
+      <a class="portal-card" href="weight-space.html">
+        <span class="tag">1 &middot; Primary Study</span>
+        <h3>Weight-Space Programming &amp; Matched-Control Results</h3>
+        <p>Full 5-seed replication of the monolithic <code>thinking=off</code> confound, the 8 weight-space paradigms, zero-drift SVD nullspace edits, and channel slicing.</p>
+        <span class="open-link">Open weight-space.html &rarr;</span>
+      </a>
+      <a class="portal-card blue" href="atomic-graph-explorer.html">
+        <span class="tag">2 &middot; Interactive Simulator</span>
+        <h3>Atomic Graph, Stepwise Attenuation &amp; Neuro-Symbolic Lab</h3>
+        <p>Live interactive sliders for DAG granularity, width, depth, <code>maker &ne; checker</code> survival reset, symbolic invariant compilation, and <code>k=1..4</code> worker bundle dispatch.</p>
+        <span class="open-link">Open atomic-graph-explorer.html &rarr;</span>
+      </a>
+      <a class="portal-card plum" href="onet-weight-atlas.html">
+        <span class="tag">3 &middot; Economy-Scale Atlas</span>
+        <h3>18,838-Task O*NET &amp; 121,565-Atom Weight Cartridge Atlas</h3>
+        <p>Searchable breakdown of all 23 major occupational groups, <code>1,016</code> roles, and <code>2,087</code> shared Detailed Work Activities into 256-byte subspace cartridges.</p>
+        <span class="open-link">Open onet-weight-atlas.html &rarr;</span>
+      </a>
+      <a class="portal-card amber" href="omni-fabric.html">
+        <span class="tag">4 &middot; Runtime Plugin v0.3.0</span>
+        <h3><code>omni-fabric-runtime</code> for Hermes Agent &amp; GrokBot</h3>
+        <p>Zero-dependency 5-mode runtime plugin with 9 tools, 10 lifecycle hooks, <code>LoRA-XS</code> 256-byte cartridges, matched <code>thinking=off</code> canary gate, and OpenAI-v1 swarm endpoints.</p>
+        <span class="open-link">Open omni-fabric.html &rarr;</span>
+      </a>
+      <a class="portal-card blue" href="quorum-forge.html">
+        <span class="tag">5 &middot; Decentralized Swarm</span>
+        <h3>QuorumForge Swarm &amp; Multi-Provider Loopback Proxy</h3>
+        <p>Connects heterogeneous local and frontier agents over CAS-fenced task queues, disjoint review gates, and progressive 4-rung neural boil-down.</p>
+        <span class="open-link">Open quorum-forge.html &rarr;</span>
+      </a>
+      <a class="portal-card" href="hermes-submission.html">
+        <span class="tag">6 &middot; Submission &amp; Demos</span>
+        <h3><code>fenced-task-loop</code> Interactive Architecture &amp; &lt;90s Videos</h3>
+        <p>Monotonic SQLite WAL <code>lease_epoch</code> task fencing, bitemporal object reuse, and narrated 1080p30 demos.</p>
+        <span class="open-link">Open hermes-submission.html &rarr;</span>
+      </a>
+    </div>
+
+    <section>
+      <h2>5-Seed Matched-Control Summary (Seeds <code>11, 23, 37, 53, 71</code>)</h2>
+      <p style="color:var(--muted);margin:0 0 8px;">
+        Every weight-space operator is evaluated side-by-side against the unedited direct-answer (<code>thinking=off</code>)
+        control under identical output budgets (<code>512</code> tokens) and held-out task splits.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Experimental Arm / Granularity Regime</th>
+            <th>5-Seed Mean &plusmn; SD</th>
+            <th>Delta vs <code>thinking=off</code></th>
+            <th>Runtime Footprint / Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Monolith: Unedited Verbose Chain</strong> (<code>thinking=on</code>)</td>
+            <td><code>9.28% &plusmn; 1.51%</code></td>
+            <td><code>-42.56 pp</code></td>
+            <td><code>82.2%</code> responses clip the 512-token ceiling mid-derivation</td>
+          </tr>
+          <tr>
+            <td><strong>Monolith: Unedited Direct Answer</strong> (<code>thinking=off</code> control)</td>
+            <td><code>51.84% &plusmn; 3.31%</code></td>
+            <td><code>Baseline (0.00 pp)</code></td>
+            <td>Prompting alone recovers the 6x apparent jump without touching weights</td>
+          </tr>
+          <tr>
+            <td><strong>Monolith: Unconstrained <code>0.016%</code> Sparse Weight Poke</strong> (<code>thinking=off</code>)</td>
+            <td><code>51.60% &plusmn; 3.11%</code></td>
+            <td><code>-0.24 pp</code> (null)</td>
+            <td>Paired <code>t = -1.395</code>; lucky vs fresh prompt swings <code>48.88% &rarr; 12.88%</code></td>
+          </tr>
+          <tr>
+            <td><strong>Atomic 32-Node Graph (1 subtask/node, rank-8 cartridges)</strong></td>
+            <td><strong><code>98.96% &plusmn; 0.25%</code></strong></td>
+            <td><strong><code>+47.36 pp</code></strong></td>
+            <td>Operator rank drops <code>51.21 &rarr; 3.00</code>; cross-seed SD drops <code>13x</code></td>
+          </tr>
+          <tr>
+            <td><strong>Neuro-Symbolic Skeleton + Orthogonal SVD Nullspace Residual</strong></td>
+            <td><strong><code>99.60% &plusmn; 0.14%</code></strong></td>
+            <td><strong><code>+50.55 pp</code> vs raw fit</strong></td>
+            <td><code>0</code> runtime LLM tokens, <code>0.0059 ms</code> latency, <code>0.0</code> anchor drift</td>
+          </tr>
+          <tr>
+            <td><strong>Wanda Activation Slicer + Closed-Form Ridge Recalibration</strong></td>
+            <td><strong><code>99.81% &plusmn; 0.28%</code></strong></td>
+            <td><strong><code>+51.12 pp</code> vs naive prune</strong></td>
+            <td><code>-75.0%</code> active channel memory (<code>128 &rarr; 32</code> channels)</td>
+          </tr>
+          <tr>
+            <td><strong>Speculative Maker-Checker Bundle (<code>k=4</code> atoms/claim)</strong></td>
+            <td><strong><code>96.71%</code></strong></td>
+            <td><strong><code>20.14x</code> throughput</strong></td>
+            <td><code>206.42</code> tasks/sec, <code>23.03</code> LLM tokens/task (<code>-96.08%</code> token burn)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="fig-card">
+        <img src="assets/fig_atomic_vs_monolithic_weight_space.png" alt="Monolithic Superposition vs Atomic Task-Graph Weight-Space Programming">
+        <div class="fig-cap">
+          <strong>Figure 1:</strong> Monolithic weight edits collide across superposed high-rank sub-circuits (<code>r_eff = 51.21</code>),
+          whereas atomic check-gated node graphs isolate rank-3..8 sub-operators that compile cleanly into 256-byte cartridges.
+        </div>
+      </div>
+
+      <div class="fig-card">
+        <img src="assets/fig_neuro_symbolic_weight_compiler.png" alt="Neuro-Symbolic Weight Compiler Pipeline">
+        <div class="fig-cap">
+          <strong>Figure 2:</strong> Three-stage neuro-symbolic weight compilation: checked worker traces induce symbolic invariant rules
+          (compiled analytically into <code>W_sym</code>), while semantic edge nuances are fitted strictly inside <code>Null(W_sym)</code>.
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <div>Open-Source Research &amp; Runtime Kits: <a href="https://github.com/aidonerightcorp/omni-fabric-runtime">omni-fabric-runtime v0.3.0</a> &middot; <a href="https://github.com/aidonerightcorp/fenced-task-loop">fenced-task-loop v0.1.0</a> &middot; <a href="metered-mcp-finops-gate.html">Metered MCP FinOps Gate</a></div>
+      <div>Additional Interactive Explorers: <a href="onet-lattice.html">O*NET Lattice</a> &middot; <a href="cellular-fabric.html">Cellular Fabric</a> &middot; <a href="studio.html">240-Task Studio</a> &middot; <a href="arena.html">Spatial Arena</a></div>
+    </div>
+  </div>
+</body>
+</html>
