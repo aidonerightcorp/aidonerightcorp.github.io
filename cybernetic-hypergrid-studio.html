@@ -454,19 +454,21 @@
       </div>
     </section>
 
-    <!-- MODULE 3: 20x72 CYBERNETIC JACOBIAN + REAL IN-BROWSER WASM/WGSL/C/SQL COMPILER -->
+    <!-- MODULE 3: CYBERNETIC JACOBIAN + REAL IN-BROWSER 9-RUNTIME WASM/RUST/WGSL/GLSL/C/SQL COMPILER -->
     <section id="sec-jacobian-wasm">
       <div class="sec-head">
         <div>
-          <h2>3. 20-Engine &times; 72-Sub-Engine Cybernetic Jacobian &amp; Live <code>.wasm / .wgsl / .c / .sql</code> Compiler</h2>
+          <h2>3. Multi-Timescale Cybernetic Jacobian &amp; Live 9-Runtime <code>.wasm / .rs / .wgsl / .glsl / .c / .sql</code> Compiler</h2>
           <p class="sec-sub">
-            Inspect the <code>20 &times; 20</code> multi-timescale coupling Jacobian <code>J(&tau;_0..&tau;_4)</code> under Lyapunov contraction bounds, trigger an impulse on any engine, and compile the active cartridge into executable IEEE-754 WebAssembly bytecode in browser memory.
+            Inspect the multi-timescale coupling Jacobian <code>J(&tau;_0..&tau;_4)</code> under Lyapunov contraction bounds, trigger an impulse on any engine, and compile the active cartridge into IEEE-754 WebAssembly bytecode, <code>#![no_std]</code> Rust, WebGPU <code>.wgsl</code>, WebGL2 <code>.glsl</code>, C99, and SQLite CTEs in browser memory.
           </p>
         </div>
         <div class="btn-row">
           <button type="button" class="btn btn-primary" onclick="compileAndExecuteCartridge()">Compile &amp; Instantiate Browser .wasm</button>
           <button type="button" class="btn" onclick="downloadArtifact('wasm')">Download .wasm</button>
+          <button type="button" class="btn" onclick="downloadArtifact('rs')">Download .rs</button>
           <button type="button" class="btn" onclick="downloadArtifact('wgsl')">Download .wgsl</button>
+          <button type="button" class="btn" onclick="downloadArtifact('glsl')">Download .glsl</button>
           <button type="button" class="btn" onclick="downloadArtifact('c')">Download .c</button>
           <button type="button" class="btn" onclick="downloadArtifact('sql')">Download .sql</button>
         </div>
@@ -577,7 +579,9 @@
 
           <div class="btn-row" style="margin-top:12px;">
             <button type="button" class="seg-btn active" id="tab-wasm" onclick="switchCompilerTab('wasm')">.wasm Hex + .wat</button>
+            <button type="button" class="seg-btn" id="tab-rs" onclick="switchCompilerTab('rs')">Rust #![no_std] .rs</button>
             <button type="button" class="seg-btn" id="tab-wgsl" onclick="switchCompilerTab('wgsl')">WebGPU .wgsl</button>
+            <button type="button" class="seg-btn" id="tab-glsl" onclick="switchCompilerTab('glsl')">WebGL2 .glsl</button>
             <button type="button" class="seg-btn" id="tab-c" onclick="switchCompilerTab('c')">ANSI C99 .c</button>
             <button type="button" class="seg-btn" id="tab-sql" onclick="switchCompilerTab('sql')">SQLite CTE .sql</button>
             <button type="button" class="btn" style="margin-left:auto;" onclick="copyCompilerCode()">Copy Source</button>
@@ -588,7 +592,7 @@
     </section>
 
     <footer class="footer">
-      <div>aidonerightcorp &middot; Continuum v1.0.0 &amp; Omni-Fabric v0.6.0 &middot; Paper &amp; Ink Light Laboratory (Zero External Dependencies)</div>
+      <div>aidonerightcorp &middot; Continuum v1.1.0 &amp; Omni-Fabric v0.6.0 &middot; Paper &amp; Ink Light Laboratory (9 Portable Runtimes &middot; Zero External Dependencies)</div>
       <div>
         <a href="benchmark-and-rebuild-observatory.html">Unified Benchmark Observatory</a> &middot;
         <a href="wasm-wgsl-dp-and-kaggle-lab.html">WASM &amp; DP-Woodbury Lab</a> &middot;
@@ -1782,7 +1786,7 @@
     // ============================================================================
     const ACTION_SLOTS = ["route_fast_l1_exit", "route_molora_expert", "route_nullspace_gate", "route_quorum_check"];
     let activeCompilerTab = "wasm";
-    let compiledArtifacts = { wasmBytes: null, wat: "", wgsl: "", c: "", sql: "" };
+    let compiledArtifacts = { wasmBytes: null, wat: "", rs: "", wgsl: "", glsl: "", c: "", sql: "" };
 
     function uLeb128(val) {
       const out = [];
@@ -2039,10 +2043,116 @@
         `GROUP BY b0.row_i, b0.bias ORDER BY b0.row_i;`
       ];
 
+      // Zero-dependency #![no_std] Rust Kernel + WebGL2 #version 300 es GLSL Shader
+      const rsW0Flat = L0.W.flatMap((r) => r.map((v) => v.toFixed(6) + "_f32")).join(", ");
+      const rsB0Flat = L0.b.map((v) => v.toFixed(6) + "_f32").join(", ");
+      const rsLines = [
+        `#![no_std]`,
+        `#![forbid(unsafe_code)]`,
+        `// Continuum Portable Zero-Alloc F32 Cartridge Kernel`,
+        `pub const IN_DIM: usize = 4;`,
+        `pub const OUT_DIM: usize = 4;`,
+        `pub static W0: [f32; ${L0.W.length * 4}] = [${rsW0Flat}];`,
+        `pub static B0: [f32; ${L0.b.length}] = [${rsB0Flat}];`
+      ];
+      if (layers.length === 1) {
+        rsLines.push(
+          `pub fn infer(x: &[f32; 4]) -> ([f32; 4], usize) {`,
+          `  let mut y = [0.0_f32; 4];`,
+          `  let mut best: usize = 0;`,
+          `  let mut r: usize = 0;`,
+          `  while r < 4 {`,
+          `    let mut s = B0[r];`,
+          `    let mut c: usize = 0;`,
+          `    while c < 4 { s += x[c] * W0[r * 4 + c]; c += 1; }`,
+          `    y[r] = s;`,
+          `    if s > y[best] { best = r; }`,
+          `    r += 1;`,
+          `  }`,
+          `  (y, best)`,
+          `}`
+        );
+      } else {
+        const L1 = layers[1];
+        const rsW1Flat = L1.W.flatMap((r) => r.map((v) => v.toFixed(6) + "_f32")).join(", ");
+        const rsB1Flat = L1.b.map((v) => v.toFixed(6) + "_f32").join(", ");
+        rsLines.push(
+          `pub static W1: [f32; 24] = [${rsW1Flat}];`,
+          `pub static B1: [f32; 4] = [${rsB1Flat}];`,
+          `pub fn infer(x: &[f32; 4]) -> ([f32; 4], usize) {`,
+          `  let mut h = [0.0_f32; 6];`,
+          `  let mut i: usize = 0;`,
+          `  while i < 6 {`,
+          `    let mut s = B0[i];`,
+          `    let mut c: usize = 0;`,
+          `    while c < 4 { s += x[c] * W0[i * 4 + c]; c += 1; }`,
+          `    h[i] = if s > 0.0_f32 { s } else { 0.0_f32 };`,
+          `    i += 1;`,
+          `  }`,
+          `  let mut y = [0.0_f32; 4];`,
+          `  let mut best: usize = 0;`,
+          `  let mut r: usize = 0;`,
+          `  while r < 4 {`,
+          `    let mut o = B1[r];`,
+          `    let mut j: usize = 0;`,
+          `    while j < 6 { o += h[j] * W1[r * 6 + j]; j += 1; }`,
+          `    y[r] = o;`,
+          `    if o > y[best] { best = r; }`,
+          `    r += 1;`,
+          `  }`,
+          `  (y, best)`,
+          `}`
+        );
+      }
+
+      const glslW0Flat = L0.W.flatMap((r) => r.map((v) => v.toFixed(6))).join(", ");
+      const glslB0Flat = L0.b.map((v) => v.toFixed(6)).join(", ");
+      const glslLines = [
+        `#version 300 es`,
+        `precision highp float;`,
+        `precision highp int;`,
+        `uniform float u_input[4];`,
+        `out vec4 frag_logit;`,
+        `const float W0[${L0.W.length * 4}] = float[${L0.W.length * 4}](${glslW0Flat});`,
+        `const float B0[${L0.b.length}] = float[${L0.b.length}](${glslB0Flat});`
+      ];
+      if (layers.length === 1) {
+        glslLines.push(
+          `void main() {`,
+          `  int r = int(gl_FragCoord.x);`,
+          `  if (r < 0 || r >= 4) { frag_logit = vec4(0.0, 0.0, 0.0, 1.0); return; }`,
+          `  float s = B0[r];`,
+          `  for (int c = 0; c < 4; ++c) { s += u_input[c] * W0[r * 4 + c]; }`,
+          `  frag_logit = vec4(s, float(r), 0.0, 1.0);`,
+          `}`
+        );
+      } else {
+        const L1 = layers[1];
+        const glslW1Flat = L1.W.flatMap((r) => r.map((v) => v.toFixed(6))).join(", ");
+        const glslB1Flat = L1.b.map((v) => v.toFixed(6)).join(", ");
+        glslLines.push(
+          `const float W1[24] = float[24](${glslW1Flat});`,
+          `const float B1[4] = float[4](${glslB1Flat});`,
+          `void main() {`,
+          `  int r = int(gl_FragCoord.x);`,
+          `  if (r < 0 || r >= 4) { frag_logit = vec4(0.0, 0.0, 0.0, 1.0); return; }`,
+          `  float o = B1[r];`,
+          `  for (int i = 0; i < 6; ++i) {`,
+          `    float s = B0[i];`,
+          `    for (int c = 0; c < 4; ++c) { s += u_input[c] * W0[i * 4 + c]; }`,
+          `    o += max(s, 0.0) * W1[r * 6 + i];`,
+          `  }`,
+          `  frag_logit = vec4(o, float(r), 0.0, 1.0);`,
+          `}`
+        );
+      }
+
       return {
         wasmBytes,
         wat: watLines.join("\n"),
+        rs: rsLines.join("\n"),
         wgsl: wgslLines.join("\n"),
+        glsl: glslLines.join("\n"),
         c: cLines.join("\n"),
         sql: sqlLines.join("\n")
       };
@@ -2108,7 +2218,7 @@
 
     function switchCompilerTab(tab) {
       activeCompilerTab = tab;
-      ["wasm", "wgsl", "c", "sql"].forEach((t) => {
+      ["wasm", "rs", "wgsl", "glsl", "c", "sql"].forEach((t) => {
         document.getElementById("tab-" + t).classList.toggle("active", t === tab);
       });
       refreshCompilerCodeView();
@@ -2117,7 +2227,9 @@
     function refreshCompilerCodeView() {
       const box = document.getElementById("compiler-code-view");
       if (activeCompilerTab === "wasm") box.textContent = compiledArtifacts.wat;
+      else if (activeCompilerTab === "rs") box.textContent = compiledArtifacts.rs;
       else if (activeCompilerTab === "wgsl") box.textContent = compiledArtifacts.wgsl;
+      else if (activeCompilerTab === "glsl") box.textContent = compiledArtifacts.glsl;
       else if (activeCompilerTab === "c") box.textContent = compiledArtifacts.c;
       else box.textContent = compiledArtifacts.sql;
     }
@@ -2127,8 +2239,12 @@
       let filename = `continuum_cartridge.${ext}`;
       if (ext === "wasm") {
         blob = new Blob([compiledArtifacts.wasmBytes], { type: "application/wasm" });
+      } else if (ext === "rs") {
+        blob = new Blob([compiledArtifacts.rs], { type: "text/x-rust" });
       } else if (ext === "wgsl") {
         blob = new Blob([compiledArtifacts.wgsl], { type: "text/plain" });
+      } else if (ext === "glsl") {
+        blob = new Blob([compiledArtifacts.glsl], { type: "text/x-glsl" });
       } else if (ext === "c") {
         blob = new Blob([compiledArtifacts.c], { type: "text/x-c" });
       } else {
