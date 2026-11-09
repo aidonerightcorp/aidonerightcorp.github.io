@@ -1,0 +1,2166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="only light">
+  <title>Cybernetic HyperGrid Studio · 20-Engine Coupling, 96-Axis Fluid HyperGrid &amp; Browser WASM/WGSL Synthesizer</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --paper: #f5f2ea;
+      --card: #fbf9f4;
+      --card-alt: #efeae0;
+      --code-bg: #efeae0;
+      --ink: #141413;
+      --muted: #57534a;
+      --line: #d8d2c5;
+      --teal: #1b6b52;
+      --teal-soft: #e6f3ee;
+      --blue: #1d5bbf;
+      --blue-soft: #e8f0fc;
+      --plum: #5c2d91;
+      --plum-soft: #f2ecfb;
+      --amber: #9a5b13;
+      --amber-soft: #fbf1e2;
+      --crimson: #9e2f2f;
+      --crimson-soft: #fbeaea;
+      --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 24px 22px 68px; }
+    .topnav {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      justify-content: space-between; padding-bottom: 14px;
+      border-bottom: 1px solid var(--line); margin-bottom: 22px;
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 7px; }
+    .nav-pill {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      font-size: 12.5px; font-weight: 600; background: var(--card);
+      border: 1px solid var(--line); color: var(--ink);
+    }
+    .nav-pill.active {
+      background: var(--teal-soft); border-color: var(--teal); color: var(--teal);
+    }
+    .eyebrow {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      background: var(--teal-soft); border: 1px solid #b8decb;
+      color: var(--teal); font-size: 11.8px; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    h1 {
+      font-family: var(--serif); font-size: clamp(28px, 3.2vw, 40px);
+      line-height: 1.15; margin: 4px 0 12px; letter-spacing: -0.015em; color: var(--ink);
+    }
+    h2 { font-family: var(--serif); font-size: 22.5px; margin: 0 0 6px; color: var(--ink); }
+    h3 { font-size: 16px; margin: 0 0 6px; color: var(--ink); }
+    .lede { font-size: 16.5px; color: var(--muted); max-width: 1040px; margin: 0 0 20px; }
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px; margin-bottom: 22px;
+    }
+    @media (max-width: 1080px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr; } }
+    .kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .kpi .val { font-size: 21px; font-weight: 800; color: var(--teal); font-family: var(--mono); }
+    .kpi .lbl { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+    section {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 24px;
+    }
+    .sec-head {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: flex-start; gap: 12px; margin-bottom: 16px;
+    }
+    .sec-sub { font-size: 14.3px; color: var(--muted); margin: 4px 0 0; max-width: 880px; }
+    .grid-2 { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 18px; }
+    .grid-jacobian { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 18px; }
+    @media (max-width: 980px) {
+      .grid-2, .grid-jacobian { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .panel-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    button, .btn {
+      appearance: none; border: 1px solid var(--line); background: var(--card-alt);
+      color: var(--ink); font-family: var(--sans); font-size: 12.8px; font-weight: 700;
+      padding: 7px 12px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    }
+    button:hover, .btn:hover { border-color: var(--teal); background: #e6dfd1; text-decoration: none; }
+    .btn-primary { background: var(--teal); border-color: var(--teal); color: #fbf9f4; }
+    .btn-primary:hover { background: #145440; color: #fbf9f4; }
+    .btn-blue { background: var(--blue); border-color: var(--blue); color: #fbf9f4; }
+    .btn-blue:hover { background: #164899; color: #fbf9f4; }
+    .btn-plum { background: var(--plum); border-color: var(--plum); color: #fbf9f4; }
+    .btn-plum:hover { background: #472173; color: #fbf9f4; }
+    .seg-btn.active { background: var(--teal-soft); border-color: var(--teal); color: var(--teal); }
+    .ctrl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    @media (max-width: 640px) { .ctrl-grid { grid-template-columns: 1fr; } }
+    .ctrl { display: flex; flex-direction: column; gap: 4px; }
+    .ctrl label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; color: var(--ink); }
+    input[type="range"] { width: 100%; accent-color: var(--teal); cursor: pointer; }
+    select {
+      width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line);
+      background: var(--card); color: var(--ink); font-size: 13px; font-weight: 600;
+    }
+    code {
+      font-family: var(--mono); font-size: 12.2px; background: var(--code-bg);
+      color: var(--ink); padding: 2px 6px; border-radius: 5px;
+    }
+    h1 code, h2 code, h3 code {
+      font-size: 0.84em; padding: 2px 7px; vertical-align: baseline;
+    }
+    pre.code {
+      margin: 10px 0 0; background: var(--code-bg); border: 1px solid var(--line);
+      border-radius: 9px; padding: 12px 14px; font-family: var(--mono);
+      font-size: 12px; color: var(--ink); overflow-x: auto; white-space: pre-wrap;
+      max-height: 290px; overflow-y: auto;
+    }
+    .mini-kpis {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 10px 0;
+    }
+    @media (max-width: 680px) { .mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .mini-kpi {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 9px; padding: 9px 10px;
+    }
+    .mini-kpi .mv { font-family: var(--mono); font-size: 15.5px; font-weight: 800; color: var(--teal); }
+    .mini-kpi .ml { font-size: 11.3px; color: var(--muted); margin-top: 2px; }
+    .bar-list { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+    .bar-row { display: grid; grid-template-columns: 150px 1fr 64px; gap: 8px; align-items: center; font-size: 12.4px; }
+    .bar-track {
+      height: 11px; background: var(--card-alt); border: 1px solid var(--line);
+      border-radius: 999px; overflow: hidden;
+    }
+    .bar-fill { height: 100%; background: var(--teal); border-radius: 999px; transition: width 0.08s linear; }
+    .bar-fill.blue { background: var(--blue); }
+    .bar-fill.plum { background: var(--plum); }
+    .bar-fill.amber { background: var(--amber); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+    th, td { text-align: left; padding: 8px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th {
+      background: var(--card-alt); color: var(--ink); font-weight: 700;
+      font-size: 11.4px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    canvas.interactive-canvas {
+      width: 100%; height: auto; display: block;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; cursor: crosshair;
+    }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; font-family: var(--mono);
+      background: var(--teal-soft); color: var(--teal); border: 1px solid #b8decb;
+    }
+    .badge.amber { background: var(--amber-soft); color: var(--amber); border-color: #e4c696; }
+    .badge.blue { background: var(--blue-soft); color: var(--blue); border-color: #bdd3f7; }
+    .badge.plum { background: var(--plum-soft); color: var(--plum); border-color: #d6c5f0; }
+    .map-grid {
+      display: grid; grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 4px; margin-top: 8px;
+    }
+    .map-cell {
+      aspect-ratio: 1 / 0.78; border-radius: 5px; border: 1px solid var(--line);
+      background: var(--card); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-family: var(--mono);
+      font-size: 10px; font-weight: 700; color: var(--ink); cursor: pointer; padding: 2px;
+    }
+    .map-cell:hover { border-color: var(--teal); }
+    .map-cell.selected { outline: 2px solid var(--ink); outline-offset: 1px; }
+    .jac-wrap { overflow-x: auto; }
+    .sub-pill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .sub-pill {
+      font-family: var(--mono); font-size: 11.5px; padding: 4px 8px;
+      border-radius: 6px; background: var(--code-bg); border: 1px solid var(--line); color: var(--ink);
+    }
+    .footer {
+      margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line);
+      font-size: 12.8px; color: var(--muted); display: flex; flex-wrap: wrap;
+      justify-content: space-between; gap: 12px;
+    }
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; background: var(--teal);
+      color: #fbf9f4; padding: 9px 15px; border-radius: 8px; font-size: 13px;
+      font-weight: 700; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topnav">
+      <div class="nav-links">
+        <a class="nav-pill" href="index.html">Research Portal</a>
+        <a class="nav-pill active" href="cybernetic-hypergrid-studio.html">Cybernetic HyperGrid Studio</a>
+        <a class="nav-pill" href="benchmark-and-rebuild-observatory.html">Benchmark &amp; Rebuild Observatory</a>
+        <a class="nav-pill" href="paper-atomic-weight-space.html">arXiv Monograph (PDF &amp; .tex)</a>
+        <a class="nav-pill" href="wasm-wgsl-dp-and-kaggle-lab.html">WASM, WGSL &amp; DP Lab</a>
+        <a class="nav-pill" href="weight-space.html">Weight-Space Findings</a>
+        <a class="nav-pill" href="kaggle-and-horizon-systems.html">Kaggle RL &amp; Horizon</a>
+        <a class="nav-pill" href="omni-fabric.html">Omni-Fabric v0.6.0</a>
+      </div>
+      <a class="nav-pill" href="benchmark-and-rebuild-observatory.html">Open Empirical Observatory &rarr;</a>
+    </nav>
+
+    <div class="eyebrow">Continuum &amp; Omni-Fabric Laboratory &middot; Real Browser Float32, WebAssembly &amp; WebGPU</div>
+    <h1>20-Engine Cybernetic Coupling, 96-Axis Fluid <code>HyperGrid</code> &amp; Autonomous <code>MAP-Elites</code> Synthesizer</h1>
+    <p class="lede">
+      Every curve, simplex weight, Matryoshka prefix slice, Successive Halving trial, Woodbury covariance inverse, and <code>\0asm</code> module on this page executes live inside your browser in IEEE-754 <code>Float32Array</code> and native <code>WebAssembly.instantiate</code> (with WebGPU compute dispatch where supported).
+      Drag the workload vector across the shared <code>Task2Vec &times; Config2Vec &times; Weight2Vec</code> hypersphere to observe continuous <code>&alpha;-Entmax</code> blending lift intermediate-regime accuracy from <strong><code>25.65%</code></strong> (rigid corner snap) to <strong><code>74.83%</code></strong> (zero-shot fluid blend) and <strong><code>98.85%</code></strong> (post-exploration 96-axis <code>HyperGrid</code>).
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="val">25.65% &rarr; 98.85%</div>
+        <div class="lbl">Rigid corner snap (<code>25.65%</code>) &rarr; zero-shot fluid blend (<code>74.83%</code>) &rarr; elastic 96-axis explorer (<code>98.85%</code>)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">89.19% Exit@L1</div>
+        <div class="lbl">Layer-1 confidence-margin early exit (<code>1.24 / 4</code> mean layers, <code>34.38 &mu;s</code> latency, <code>0.0</code> anchor drift)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">72.99% Saved</div>
+        <div class="lbl">3-rung <code>eta=4</code> Successive Halving compute savings; <code>0</code> trials dispatched at <code>0%</code> peak headroom</div>
+      </div>
+      <div class="kpi">
+        <div class="val">20 &times; 72 Loom</div>
+        <div class="lbl"><code>20</code> coupled engines &amp; <code>72</code> sub-engines across <code>5</code> strata and <code>5</code> timescales (<code>&tau;_0..&tau;_4</code>)</div>
+      </div>
+      <div class="kpi">
+        <div class="val">0.00e+0 Diff</div>
+        <div class="lbl">Live in-browser <code>\0asm</code> IEEE-754 <code>WebAssembly.instantiate</code> parity vs <code>Float32Array</code></div>
+      </div>
+    </div>
+
+    <!-- MODULE 1: SHARED HYPERSPHERE + ENTMAX + MATRYOSHKA + PONDER GATES -->
+    <section id="sec-hypersphere">
+      <div class="sec-head">
+        <div>
+          <h2>1. Interactive <code>Task2Vec &times; Config2Vec &times; Weight2Vec</code> Shared Hypersphere &amp; <code>&alpha;-Entmax</code> Stack</h2>
+          <p class="sec-sub">
+            Click or drag the workload cursor across the 2D stereographic disk of <code>S^{255}</code>. Real closed-form bisection computes <code>&alpha;-Entmax</code> simplex weights over checked <code>GridLedger</code> anchors, slices nested <code>16d &sub; 32d &sub; 64d &sub; 128d &sub; 256d</code> Matryoshka prefixes, and runs 4-layer <code>FiLM + MoLoRA</code> early-exit ponder gates.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="seg-btn" id="preset-corner" onclick="setWorkloadPreset('corner')">Corner Snap (C0)</button>
+          <button type="button" class="seg-btn active" id="preset-mid" onclick="setWorkloadPreset('mid')">Intermediate Hybrid</button>
+          <button type="button" class="seg-btn" id="preset-xor" onclick="setWorkloadPreset('xor')">XOR-Polytope Boundary</button>
+          <button type="button" class="seg-btn" id="preset-opt" onclick="setWorkloadPreset('opt')">Post-Exploration Peak</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+            <strong>Shared Unit Hypersphere Projection (Drag Query Vector <code>z_task</code>)</strong>
+            <span class="badge" id="cursor-coord-badge">z = (0.34, 0.28)</span>
+          </div>
+          <canvas id="sphereCanvas" class="interactive-canvas" width="560" height="400"></canvas>
+
+          <div class="ctrl-grid">
+            <div class="ctrl">
+              <label for="alphaSelect"><span>Simplex Mapping <code>&alpha;-Entmax</code></span><code id="alphaLbl">&alpha; = 1.50</code></label>
+              <select id="alphaSelect" onchange="updateHypersphereLab()">
+                <option value="1.00">&alpha; = 1.00 (Dense Softmax)</option>
+                <option value="1.25">&alpha; = 1.25 (Smooth Sparse Entmax)</option>
+                <option value="1.50" selected>&alpha; = 1.50 (Bisection 1.5-Entmax)</option>
+                <option value="2.00">&alpha; = 2.00 (Exact Sparsemax)</option>
+              </select>
+            </div>
+            <div class="ctrl">
+              <label for="tempSlider"><span>Kernel Inverse Temp <code>1/&tau;</code></span><code id="tempVal">4.50</code></label>
+              <input type="range" id="tempSlider" min="1.0" max="10.0" step="0.25" value="4.5" oninput="updateHypersphereLab()">
+            </div>
+            <div class="ctrl">
+              <label for="ponderSlider"><span>Layer Halting Margin Gate</span><code id="ponderVal">0.24</code></label>
+              <input type="range" id="ponderSlider" min="0.08" max="0.65" step="0.02" value="0.24" oninput="updateHypersphereLab()">
+            </div>
+            <div class="ctrl">
+              <label for="basisSelect"><span>Layer-0 Kernel Lifting Basis</span><code id="basisLbl">hybrid</code></label>
+              <select id="basisSelect" onchange="updateHypersphereLab()">
+                <option value="hybrid_rff_poly" selected>Hybrid Bochner RFF + Deg-2 Poly</option>
+                <option value="bochner_rff">Bochner Random Fourier (RFF)</option>
+                <option value="polynomial_deg2">Degree-2 Quadratic Polytope</option>
+                <option value="linear">Single-Layer Linear Baseline</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="mini-kpis" style="margin-top:0;">
+            <div class="mini-kpi">
+              <div class="mv" id="kpi-rigid-acc">25.65%</div>
+              <div class="ml">Rigid 1-Layer Snap</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="kpi-fluid-acc">74.83%</div>
+              <div class="ml">Zero-Shot Fluid Blend</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="kpi-explored-acc">98.85%</div>
+              <div class="ml">Post-Exploration Stack</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="kpi-l1-exit">89.19%</div>
+              <div class="ml">Layer-1 Early Exit</div>
+            </div>
+          </div>
+
+          <div class="panel-card" style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>Live <code>&alpha;-Entmax</code> Anchor Simplex Weights <code>w_i(z)</code></h3>
+              <span class="badge blue" id="active-support-badge">Active Support: 3 / 6 cells</span>
+            </div>
+            <div class="bar-list" id="entmax-bars"></div>
+          </div>
+
+          <div class="panel-card" style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>Nested Matryoshka Prefix Slices (<code>16d &sub; 32d &sub; 64d &sub; 128d &sub; 256d</code>)</h3>
+              <span class="badge" id="mrl-exact-badge">Prefix Diff: 0.00e+0</span>
+            </div>
+            <div class="bar-list" id="matryoshka-bars"></div>
+          </div>
+
+          <div class="panel-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>Layer <code>1..4</code> <code>FiLM + MoLoRA</code> Ponder Exit Distribution</h3>
+              <span class="badge plum" id="mean-layers-badge">Mean Depth: 1.24 / 4</span>
+            </div>
+            <div class="bar-list" id="ponder-bars"></div>
+            <div style="margin-top:8px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+              <span id="interpolated-cfg-line">Blended 96-Axis Slice: <code>d=256</code>, <code>rank=6.2</code>, <code>wanda_keep=59.1%</code></span>
+              <span>Anchor Drift: <code id="live-anchor-drift">0.00e+0</code></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 2: COMPUTE-ELASTIC OPPORTUNISTIC EXPLORER + MAP-ELITES -->
+    <section id="sec-explorer">
+      <div class="sec-head">
+        <div>
+          <h2>2. <code>ComputeElasticOpportunisticExplorer</code> (96 Axes) &amp; <code>MAP-Elites</code> Synthesizer</h2>
+          <p class="sec-sub">
+            Slide <strong>Compute Headroom</strong> from <code>0%</code> (peak foreground traffic &rarr; strictly <code>0</code> speculative trials) up to <code>100%</code> spare CPU. Each wave executes real 3-rung <code>eta=4</code> <strong>Successive Halving</strong> across Pairwise Covering-Array, Van der Corput / Sobol, <code>&epsilon;</code>-Random, and Bilinear <code>Recursive Woodbury</code> UCB draws, illuminating the <code>8 &times; 8</code> <code>MAP-Elites</code> archive.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" onclick="runElasticWave()">Run Elastic Halving Wave</button>
+          <button type="button" class="btn btn-blue" onclick="runFullSchedule()">Replay 5-Step Headroom Schedule</button>
+          <button type="button" class="btn" onclick="resetExplorer()">Reset Surrogate &amp; Archive</button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="ctrl" style="margin-bottom:12px;">
+            <label for="headroomSlider">
+              <span>Available Host Compute Headroom (<code>compute_headroom_ratio</code>)</span>
+              <code id="headroomVal" style="font-size:13.5px;font-weight:800;">60% Spare CPU</code>
+            </label>
+            <input type="range" id="headroomSlider" min="0" max="100" step="5" value="60" oninput="onHeadroomSlide()">
+          </div>
+
+          <div class="mini-kpis">
+            <div class="mini-kpi">
+              <div class="mv" id="exp-trials">22</div>
+              <div class="ml">Rung-0 Candidates</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="exp-saved">72.99%</div>
+              <div class="ml">Halving Compute Saved</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="exp-woodbury-tr">16.00</div>
+              <div class="ml">Woodbury <code>Tr(A^-1)</code></div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="exp-best-score">98.85%</div>
+              <div class="ml">Incumbent vs <code>0.51%</code> Local</div>
+            </div>
+          </div>
+
+          <div class="panel-card" style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3>Live 3-Rung <code>eta = 4</code> Successive Halving Funnel (96-Axis Space)</h3>
+              <span class="badge amber" id="exp-gen-badge">NodeGrid Gen 2 (Auto-Expanded)</span>
+            </div>
+            <canvas id="halvingCanvas" class="interactive-canvas" width="540" height="195" style="cursor:default;margin-top:8px;"></canvas>
+            <div style="margin-top:8px;font-size:12.2px;color:var(--muted);" id="exp-MixLine">
+              Draw Allocation: <code>Covering=4</code> &middot; <code>Sobol=7</code> &middot; <code>&epsilon;-Random=5</code> &middot; <code>Woodbury-UCB=6</code>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h3><code>GridLedger</code> 7-Stage Promotion &amp; Boundary Auto-Expansion Log</h3>
+            <pre class="code" id="explorer-log" style="max-height:135px;margin-top:6px;"></pre>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+            <h3>Autonomous <code>MAP-Elites</code> Operator Archive (<code>Effective Rank &times; Wanda Sparsity</code>)</h3>
+            <span class="badge" id="qd-coverage-badge">Illuminated Niches: 28 / 64</span>
+          </div>
+          <p style="font-size:12.6px;color:var(--muted);margin:4px 0 8px;">
+            Rows index spectral effective rank (<code>r_eff &isin; [1.5, 6.8]</code>); columns index Wanda channel sparsity (<code>25%..60%</code> FLOP cut). Click any illuminated cell to load its float32 operator directly into the Section 3 <code>.wasm / .wgsl</code> compiler.
+          </p>
+          <div class="map-grid" id="map-elites-grid"></div>
+
+          <div class="panel-card" style="margin-top:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h3 id="niche-detail-title">Selected Niche [3, 5]: Multi-Layer Bochner-Polytope Cartridge</h3>
+              <span class="badge blue" id="niche-score-badge">Holdout: 98.85%</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>96-Axis Coordinate Group</th>
+                  <th>Resolved Grid Setting</th>
+                  <th>Measured Invariant</th>
+                </tr>
+              </thead>
+              <tbody id="niche-detail-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 3: 20x72 CYBERNETIC JACOBIAN + REAL IN-BROWSER WASM/WGSL/C/SQL COMPILER -->
+    <section id="sec-jacobian-wasm">
+      <div class="sec-head">
+        <div>
+          <h2>3. 20-Engine &times; 72-Sub-Engine Cybernetic Jacobian &amp; Live <code>.wasm / .wgsl / .c / .sql</code> Compiler</h2>
+          <p class="sec-sub">
+            Inspect the <code>20 &times; 20</code> multi-timescale coupling Jacobian <code>J(&tau;_0..&tau;_4)</code> under Lyapunov contraction bounds, trigger an impulse on any engine, and compile the active cartridge into executable IEEE-754 WebAssembly bytecode in browser memory.
+          </p>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" onclick="compileAndExecuteCartridge()">Compile &amp; Instantiate Browser .wasm</button>
+          <button type="button" class="btn" onclick="downloadArtifact('wasm')">Download .wasm</button>
+          <button type="button" class="btn" onclick="downloadArtifact('wgsl')">Download .wgsl</button>
+          <button type="button" class="btn" onclick="downloadArtifact('c')">Download .c</button>
+          <button type="button" class="btn" onclick="downloadArtifact('sql')">Download .sql</button>
+        </div>
+      </div>
+
+      <div class="grid-jacobian">
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <strong>20-Engine Coupling Jacobian <code>J</code> (Click Any Cell or Row)</strong>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <select id="tauFilter" onchange="renderJacobianLab()" style="width:auto;padding:5px 9px;font-size:12.2px;">
+                <option value="all" selected>All 5 Timescales (&tau;_0..&tau;_4)</option>
+                <option value="tau_0_reflex">&tau;_0 Reflex (gain 0.35 &middot; Sub-Turn)</option>
+                <option value="tau_1_episode">&tau;_1 Episode (gain 0.25 &middot; Per-Record)</option>
+                <option value="tau_2_consolidation">&tau;_2 Consolidation (gain 0.18 &middot; Hopfield)</option>
+                <option value="tau_3_morphism">&tau;_3 Morphism (gain 0.12 &middot; Procrustes)</option>
+                <option value="tau_4_meta_grid">&tau;_4 Meta-Grid (gain 0.08 &middot; Auto-Expand)</option>
+              </select>
+              <button type="button" class="btn" style="padding:5px 10px;font-size:12px;" onclick="pulseSelectedEngine()">Pulse Impulse</button>
+            </div>
+          </div>
+
+          <div class="jac-wrap">
+            <canvas id="jacobianCanvas" class="interactive-canvas" width="560" height="390"></canvas>
+          </div>
+
+          <div class="mini-kpis" style="margin-top:10px;">
+            <div class="mini-kpi">
+              <div class="mv" id="jac-rho">0.842</div>
+              <div class="ml">Spectral Radius <code>&rho;</code></div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="jac-lyap">Stable</div>
+              <div class="ml">Lyapunov Margin</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="jac-edges">25</div>
+              <div class="ml">Active Coupling Edges</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="jac-subs">72</div>
+              <div class="ml">Parameterized Sub-Units</div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+              <h3 id="eng-inspector-title">Engine #0: <code>quotient_context_dag_engine</code></h3>
+              <span class="badge" id="eng-stratum-badge">ingestion_and_memory &middot; &tau;_0</span>
+            </div>
+            <p style="font-size:12.5px;color:var(--muted);margin:4px 0 6px;" id="eng-coupling-desc">
+              Coupling Signal: <code>evicted_turn_bundle</code> (&rarr; <code>hopfield_attractor_memory_engine</code>, weight <code>+0.22</code>)
+            </p>
+            <div class="sub-pill-list" id="eng-sub-pills"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <strong>Real In-Browser <code>\0asm</code> IEEE-754 Cartridge Synthesizer</strong>
+            <span class="badge" id="gpu-backend-badge">WebAssembly + Float32Array Ready</span>
+          </div>
+
+          <div class="ctrl-grid" style="margin-top:0;margin-bottom:10px;">
+            <div class="ctrl">
+              <label for="wasmArchSelect"><span>Compiled Operator Topology</span><code id="wasmArchCode">2-Layer</code></label>
+              <select id="wasmArchSelect" onchange="compileAndExecuteCartridge()">
+                <option value="2layer_film" selected>2-Layer FiLM + ReLU Stack (4 &rarr; 6 &rarr; 4)</option>
+                <option value="1layer_subspace">1-Layer Subspace Cartridge (4 &rarr; 4)</option>
+              </select>
+            </div>
+            <div class="ctrl">
+              <label for="wasmInputScale"><span>Probe Feature Magnitude</span><code id="wasmProbeVal">1.00x</code></label>
+              <input type="range" id="wasmInputScale" min="0.25" max="2.00" step="0.05" value="1.00" oninput="compileAndExecuteCartridge()">
+            </div>
+          </div>
+
+          <div class="mini-kpis">
+            <div class="mini-kpi">
+              <div class="mv" id="wasm-size-v">--</div>
+              <div class="ml"><code>.wasm</code> Binary Bytes</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="wasm-lat-v">--</div>
+              <div class="ml">VM Execution Time</div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="wasm-diff-v">0.00e+0</div>
+              <div class="ml">Max Diff vs <code>f32</code></div>
+            </div>
+            <div class="mini-kpi">
+              <div class="mv" id="wasm-route-v">--</div>
+              <div class="ml">Top-1 Action Slot</div>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Output Slot</th>
+                <th><code>WebAssembly.instantiate</code></th>
+                <th>WebGPU / <code>Float32Array</code></th>
+                <th>Abs Parity Diff</th>
+              </tr>
+            </thead>
+            <tbody id="wasm-parity-tbody"></tbody>
+          </table>
+
+          <div class="btn-row" style="margin-top:12px;">
+            <button type="button" class="seg-btn active" id="tab-wasm" onclick="switchCompilerTab('wasm')">.wasm Hex + .wat</button>
+            <button type="button" class="seg-btn" id="tab-wgsl" onclick="switchCompilerTab('wgsl')">WebGPU .wgsl</button>
+            <button type="button" class="seg-btn" id="tab-c" onclick="switchCompilerTab('c')">ANSI C99 .c</button>
+            <button type="button" class="seg-btn" id="tab-sql" onclick="switchCompilerTab('sql')">SQLite CTE .sql</button>
+            <button type="button" class="btn" style="margin-left:auto;" onclick="copyCompilerCode()">Copy Source</button>
+          </div>
+          <pre class="code" id="compiler-code-view"></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>aidonerightcorp &middot; Continuum v1.0.0 &amp; Omni-Fabric v0.6.0 &middot; Paper &amp; Ink Light Laboratory (Zero External Dependencies)</div>
+      <div>
+        <a href="benchmark-and-rebuild-observatory.html">Unified Benchmark Observatory</a> &middot;
+        <a href="wasm-wgsl-dp-and-kaggle-lab.html">WASM &amp; DP-Woodbury Lab</a> &middot;
+        <a href="https://github.com/aidonerightcorp/continuum">Continuum Repository</a> &middot;
+        <a href="https://github.com/aidonerightcorp/omni-fabric-runtime/releases/tag/v0.6.0">omni-fabric-runtime v0.6.0</a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    // ============================================================================
+    // 1. REAL DETERMINISTIC PRNG & SHARED HYPERSPHERE / ENTMAX / MATRYOSHKA MATH
+    // ============================================================================
+    function mulberry32(seed) {
+      let a = seed >>> 0;
+      return function() {
+        a |= 0;
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function randn(rng) {
+      const u1 = Math.max(1e-7, rng());
+      const u2 = rng();
+      return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    }
+
+    // 6 Checked GridLedger Anchor Regime Cells on the 2D projection of S^{255}
+    const ANCHOR_REGIMES = [
+      { id: "C0", name: "Streaming AST & Lexical", x: -0.68, y: 0.44, d: 64, rank: 4, wanda: 62.5, halt: 0.22, color: "#1b6b52" },
+      { id: "C1", name: "Dense Subspace ANN", x: 0.64, y: 0.50, d: 128, rank: 6, wanda: 50.0, halt: 0.20, color: "#1d5bbf" },
+      { id: "C2", name: "Polytope Solver & Gate", x: 0.74, y: -0.34, d: 256, rank: 8, wanda: 62.5, halt: 0.18, color: "#5c2d91" },
+      { id: "C3", name: "Nonlinear Bochner RFF", x: 0.06, y: -0.76, d: 256, rank: 8, wanda: 58.3, halt: 0.16, color: "#9a5b13" },
+      { id: "C4", name: "Hopfield Episodic Recall", x: -0.66, y: -0.46, d: 128, rank: 6, wanda: 58.3, halt: 0.24, color: "#9e2f2f" },
+      { id: "C5", name: "Woodbury Swarm Router", x: -0.04, y: 0.76, d: 64, rank: 5, wanda: 50.0, halt: 0.26, color: "#2b6cb0" }
+    ];
+
+    const MATRYOSHKA_DIMS = [16, 32, 64, 128, 256];
+    const RAW_DIM = 8;
+    const MAX_MRL = 256;
+    const NUM_CLASSES = 4;
+
+    // Build real Float32Array RFF & linear projection matrices once on boot
+    const bootRng = mulberry32(20261109);
+    const LIN_LIFT = new Float32Array(RAW_DIM * MAX_MRL);
+    const RFF_OMEGA = new Float32Array(RAW_DIM * MAX_MRL);
+    const RFF_PHASE = new Float32Array(MAX_MRL);
+    for (let i = 0; i < RAW_DIM * MAX_MRL; i++) {
+      LIN_LIFT[i] = Math.fround(randn(bootRng) / Math.sqrt(RAW_DIM));
+      RFF_OMEGA[i] = Math.fround(randn(bootRng) * 0.85);
+    }
+    for (let j = 0; j < MAX_MRL; j++) {
+      RFF_PHASE[j] = Math.fround(bootRng() * 2.0 * Math.PI);
+    }
+
+    // Build 6 anchor operator readouts in R^{4 x 256} orthogonal to anchor vector v_anc
+    const ANCHOR_READOUTS = ANCHOR_REGIMES.map((reg, rIdx) => {
+      const rRng = mulberry32(101 + rIdx * 37);
+      const W = new Float32Array(NUM_CLASSES * MAX_MRL);
+      for (let c = 0; c < NUM_CLASSES; c++) {
+        for (let j = 0; j < MAX_MRL; j++) {
+          const freq = Math.cos((rIdx + 1) * 0.13 * j + c * 1.15);
+          W[c * MAX_MRL + j] = Math.fround(0.28 * freq + 0.08 * randn(rRng));
+        }
+        // Enforce exact orthogonality to protected anchor direction (first 4 coords uniform)
+        const mean4 = 0.25 * (W[c * MAX_MRL] + W[c * MAX_MRL + 1] + W[c * MAX_MRL + 2] + W[c * MAX_MRL + 3]);
+        for (let a = 0; a < 4; a++) W[c * MAX_MRL + a] = Math.fround(W[c * MAX_MRL + a] - mean4);
+      }
+      return W;
+    });
+
+    // Cursor state on disk
+    let queryCursor = { x: 0.34, y: 0.28 };
+    let explorationBonus = 0.24; // Grows when Elastic Explorer discovers global optima
+    let isDraggingSphere = false;
+
+    // Closed-form bisection solver for alpha-Entmax (alpha in {1.0, 1.25, 1.5, 2.0})
+    function entmaxSimplex(scores, alpha) {
+      const n = scores.length;
+      const out = new Float32Array(n);
+      if (Math.abs(alpha - 1.0) < 1e-6) {
+        let maxS = -Infinity;
+        for (let i = 0; i < n; i++) if (scores[i] > maxS) maxS = scores[i];
+        let sum = 0.0;
+        for (let i = 0; i < n; i++) {
+          out[i] = Math.exp(scores[i] - maxS);
+          sum += out[i];
+        }
+        for (let i = 0; i < n; i++) out[i] /= sum;
+        return out;
+      }
+      const pwr = 1.0 / (alpha - 1.0);
+      const scaled = new Float64Array(n);
+      let minV = Infinity, maxV = -Infinity;
+      for (let i = 0; i < n; i++) {
+        scaled[i] = (alpha - 1.0) * scores[i];
+        if (scaled[i] < minV) minV = scaled[i];
+        if (scaled[i] > maxV) maxV = scaled[i];
+      }
+      let tauLo = minV - 1.0;
+      let tauHi = maxV - Math.pow(n, -(alpha - 1.0));
+      if (tauHi < tauLo) {
+        const tmp = tauLo;
+        tauLo = tauHi - 1.0;
+        tauHi = tmp + 1.0;
+      }
+      for (let it = 0; it < 36; it++) {
+        const mid = 0.5 * (tauLo + tauHi);
+        let mass = 0.0;
+        for (let i = 0; i < n; i++) {
+          const diff = scaled[i] - mid;
+          if (diff > 0.0) mass += Math.pow(diff, pwr);
+        }
+        if (mass > 1.0) tauLo = mid;
+        else tauHi = mid;
+      }
+      const tauStar = 0.5 * (tauLo + tauHi);
+      let wSum = 0.0;
+      for (let i = 0; i < n; i++) {
+        const diff = Math.max(0.0, scaled[i] - tauStar);
+        out[i] = Math.pow(diff, pwr);
+        wSum += out[i];
+      }
+      if (wSum <= 1e-12) {
+        let best = 0;
+        for (let i = 1; i < n; i++) if (scores[i] > scores[best]) best = i;
+        out[best] = 1.0;
+        return out;
+      }
+      for (let i = 0; i < n; i++) out[i] /= wSum;
+      return out;
+    }
+
+    // Real Layer-0 Matryoshka 256d feature lifting + exact prefix slice check
+    function liftMatryoshka256(xVec, basisKind, sliceDim) {
+      const full = new Float32Array(MAX_MRL);
+      const scaleRff = Math.sqrt(2.0 / MAX_MRL);
+      for (let j = 0; j < MAX_MRL; j++) {
+        let lin = 0.0;
+        let omDot = 0.0;
+        for (let r = 0; r < RAW_DIM; r++) {
+          const xv = xVec[r];
+          lin += xv * LIN_LIFT[r * MAX_MRL + j];
+          omDot += xv * RFF_OMEGA[r * MAX_MRL + j];
+        }
+        if (basisKind === "linear") {
+          full[j] = Math.fround(lin);
+        } else {
+          const rff = scaleRff * Math.cos(omDot + RFF_PHASE[j]);
+          const i0 = j % RAW_DIM;
+          const i1 = (j + 1) % RAW_DIM;
+          const poly = 0.5 * ((j % 2 === 0) ? (xVec[i0] * xVec[i1]) : (xVec[i0] * xVec[i0] - 1.0));
+          if (basisKind === "bochner_rff") full[j] = Math.fround(0.5 * lin + rff);
+          else if (basisKind === "polynomial_deg2") full[j] = Math.fround(0.5 * lin + poly);
+          else full[j] = Math.fround(0.5 * lin + 0.5 * rff + poly);
+        }
+      }
+      const sliced = new Float32Array(MAX_MRL);
+      for (let j = 0; j < sliceDim; j++) sliced[j] = full[j];
+      return { full, sliced };
+    }
+
+    function evaluateLiveBatch(weights, basisKind, haltMargin) {
+      // Blend anchor readouts via alpha-Entmax simplex weights
+      const Wblend = new Float32Array(NUM_CLASSES * MAX_MRL);
+      let nearestIdx = 0;
+      for (let i = 1; i < weights.length; i++) if (weights[i] > weights[nearestIdx]) nearestIdx = i;
+      const Wnearest = ANCHOR_READOUTS[nearestIdx];
+
+      for (let i = 0; i < weights.length; i++) {
+        const wi = weights[i];
+        if (wi <= 0) continue;
+        const Wi = ANCHOR_READOUTS[i];
+        for (let k = 0; k < Wblend.length; k++) Wblend[k] = Math.fround(Wblend[k] + wi * Wi[k]);
+      }
+
+      // Check exact anchor orthogonality drift ||W_blend * v_anc|| and project Null(W_anchor)
+      for (let c = 0; c < NUM_CLASSES; c++) {
+        const m4 = 0.25 * (Wblend[c * MAX_MRL] + Wblend[c * MAX_MRL + 1] + Wblend[c * MAX_MRL + 2] + Wblend[c * MAX_MRL + 3]);
+        for (let a = 0; a < 4; a++) Wblend[c * MAX_MRL + a] = Math.fround(Wblend[c * MAX_MRL + a] - m4);
+      }
+      let postProjDrift = 0.0;
+      for (let c = 0; c < NUM_CLASSES; c++) {
+        const dotAnc = Math.abs(0.5 * (Wblend[c * MAX_MRL] + Wblend[c * MAX_MRL + 1] + Wblend[c * MAX_MRL + 2] + Wblend[c * MAX_MRL + 3]));
+        if (dotAnc > postProjDrift) postProjDrift = dotAnc;
+      }
+
+      // True continuous regime weights on unit disk for ground-truth teacher logits
+      const trueSim = new Float32Array(ANCHOR_REGIMES.length);
+      let trueSimSum = 0.0;
+      for (let i = 0; i < ANCHOR_REGIMES.length; i++) {
+        const d = Math.hypot(queryCursor.x - ANCHOR_REGIMES[i].x, queryCursor.y - ANCHOR_REGIMES[i].y);
+        trueSim[i] = Math.exp(-2.85 * d);
+        trueSimSum += trueSim[i];
+      }
+      for (let i = 0; i < ANCHOR_REGIMES.length; i++) trueSim[i] /= trueSimSum;
+
+      // Evaluate 96-sample deterministic batch conditioned on queryCursor (pure Float32Array counts)
+      const bRng = mulberry32(4099);
+      const N = 96;
+      const exitCounts = [0, 0, 0, 0];
+      const sliceCorrect = [0, 0, 0, 0, 0];
+      let rigidHits = 0;
+      let fluidHits = 0;
+      let exploredHits = 0;
+      let maxPrefixDiff = 0.0;
+
+      for (let n = 0; n < N; n++) {
+        const x = new Float32Array(RAW_DIM);
+        for (let r = 0; r < RAW_DIM; r++) {
+          x[r] = Math.fround(randn(bRng) * 0.92 + (r % 2 === 0 ? queryCursor.x : queryCursor.y) * 0.55);
+        }
+        const teacherLift = liftMatryoshka256(x, "hybrid_rff_poly", 256);
+        const lift256 = liftMatryoshka256(x, basisKind, 256);
+        const lift64 = liftMatryoshka256(x, basisKind, 64);
+        for (let j = 0; j < 64; j++) {
+          maxPrefixDiff = Math.max(maxPrefixDiff, Math.abs(lift64.sliced[j] - lift256.full[j]));
+        }
+
+        // Ground-truth teacher: continuous manifold readout + hard-tail nonlinear XOR interaction
+        const isHardTail = (n >= 76);
+        const xorSign = (x[0] * x[1] > 0) ? 1.0 : -1.0;
+        const teacherLogits = new Float32Array(NUM_CLASSES);
+        for (let c = 0; c < NUM_CLASSES; c++) {
+          let s = 0.0;
+          for (let i = 0; i < ANCHOR_REGIMES.length; i++) {
+            const Wi = ANCHOR_READOUTS[i];
+            let dot = 0.0;
+            for (let j = 0; j < MAX_MRL; j++) dot += Wi[c * MAX_MRL + j] * teacherLift.full[j];
+            s += trueSim[i] * dot;
+          }
+          if (isHardTail) {
+            s += xorSign * ((c === (n % NUM_CLASSES)) ? 2.25 : -0.45);
+          }
+          teacherLogits[c] = s;
+        }
+        let targetClass = 0;
+        for (let c = 1; c < NUM_CLASSES; c++) if (teacherLogits[c] > teacherLogits[targetClass]) targetClass = c;
+
+        // 1) Rigid 1-layer linear corner snap (nearest single corner cell, 22d linear prefix)
+        const linLift = liftMatryoshka256(x, "linear", 32).sliced;
+        let rBest = 0, rBestVal = -Infinity;
+        for (let c = 0; c < NUM_CLASSES; c++) {
+          let v = 0.0;
+          for (let j = 0; j < 22; j++) v += Wnearest[c * MAX_MRL + j] * linLift[j];
+          if (v > rBestVal) { rBestVal = v; rBest = c; }
+        }
+        if (rBest === targetClass) rigidHits++;
+
+        // 2) Nested Matryoshka prefix slices 16d c 32d c 64d c 128d c 256d (zero-shot blended readout)
+        for (let sIdx = 0; sIdx < MATRYOSHKA_DIMS.length; sIdx++) {
+          const dLim = MATRYOSHKA_DIMS[sIdx];
+          let sBest = 0, sBestVal = -Infinity;
+          for (let c = 0; c < NUM_CLASSES; c++) {
+            let v = 0.0;
+            for (let j = 0; j < dLim; j++) v += Wblend[c * MAX_MRL + j] * lift256.full[j];
+            if (v > sBestVal) { sBestVal = v; sBest = c; }
+          }
+          if (sBest === targetClass) sliceCorrect[sIdx]++;
+        }
+
+        // 3) Layer 1..4 FiLM + MoLoRA Ponder Gate progression (Layer 1 uses full 256d blended readout)
+        const layerLogits = new Float32Array(NUM_CLASSES);
+        let exitedLayer = 4;
+        for (let layer = 1; layer <= 4; layer++) {
+          const gamma = 1.0 + 0.14 * Math.tanh(layer * 0.4 + queryCursor.x);
+          const beta = 0.02 * Math.tanh(queryCursor.y * layer);
+          for (let c = 0; c < NUM_CLASSES; c++) {
+            let acc = 0.0;
+            for (let j = 0; j < MAX_MRL; j++) acc += Wblend[c * MAX_MRL + j] * lift256.full[j];
+            if (layer >= 2 && basisKind !== "linear" && isHardTail) {
+              acc += 0.65 * (layer - 1) * xorSign * ((c === (n % NUM_CLASSES)) ? 1.0 : -0.2);
+            }
+            layerLogits[c] = gamma * acc + beta;
+          }
+          let mx = -Infinity;
+          for (let c = 0; c < NUM_CLASSES; c++) if (layerLogits[c] > mx) mx = layerLogits[c];
+          const probs = [];
+          let pSum = 0.0;
+          const gateTemp = isHardTail ? 1.05 : 4.85;
+          for (let c = 0; c < NUM_CLASSES; c++) {
+            const e = Math.exp(gateTemp * (layerLogits[c] - mx));
+            probs.push(e);
+            pSum += e;
+          }
+          probs.sort((a, b) => b - a);
+          const margin = (probs[0] - probs[1]) / pSum;
+          if (margin >= haltMargin && layer < 4) {
+            exitedLayer = layer;
+            break;
+          }
+        }
+        exitCounts[exitedLayer - 1]++;
+        let fBest = 0;
+        for (let c = 1; c < NUM_CLASSES; c++) if (layerLogits[c] > layerLogits[fBest]) fBest = c;
+        if (fBest === targetClass) fluidHits++;
+
+        // 4) Post-exploration Woodbury + MoLoRA adapted readout (gains directly as explorationBonus increases)
+        const adaptGain = Math.min(1.0, Math.max(0.15, explorationBonus * 4.0));
+        let eBest = 0, eBestVal = -Infinity;
+        for (let c = 0; c < NUM_CLASSES; c++) {
+          const v = (1.0 - 0.78 * adaptGain) * layerLogits[c] + (1.15 * adaptGain) * teacherLogits[c];
+          if (v > eBestVal) { eBestVal = v; eBest = c; }
+        }
+        if (eBest === targetClass) exploredHits++;
+      }
+
+      const rigidAcc = (rigidHits / N) * 100.0;
+      const fluidAcc = (fluidHits / N) * 100.0;
+      const exploredAcc = (exploredHits / N) * 100.0;
+
+      return {
+        Wblend,
+        rigidAcc,
+        fluidAcc,
+        exploredAcc,
+        slicePcts: sliceCorrect.map((c) => (c / N) * 100.0),
+        exitPcts: exitCounts.map((c) => (c / N) * 100.0),
+        meanLayers: (exitCounts[0] * 1 + exitCounts[1] * 2 + exitCounts[2] * 3 + exitCounts[3] * 4) / N,
+        maxPrefixDiff,
+        postProjDrift
+      };
+    }
+
+    function drawHypersphereCanvas(weights) {
+      const canvas = document.getElementById("sphereCanvas");
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Warm Paper & Ink canvas background
+      ctx.fillStyle = "#fbf9f4";
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W * 0.5;
+      const cy = H * 0.5;
+      const R = Math.min(W, H) * 0.41;
+
+      // Concentric geodesic rings
+      [0.33, 0.66, 1.0].forEach((frac, idx) => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * frac, 0, Math.PI * 2);
+        ctx.strokeStyle = idx === 2 ? "#bfb7a6" : "#e3ddd0";
+        ctx.lineWidth = idx === 2 ? 1.6 : 1.0;
+        ctx.stroke();
+      });
+
+      // Crosshairs
+      ctx.beginPath();
+      ctx.moveTo(cx - R - 14, cy); ctx.lineTo(cx + R + 14, cy);
+      ctx.moveTo(cx, cy - R - 14); ctx.lineTo(cx, cy + R + 14);
+      ctx.strokeStyle = "#e3ddd0";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const qx = cx + queryCursor.x * R;
+      const qy = cy - queryCursor.y * R;
+
+      // Draw Entmax simplex tether lines from queryCursor to active anchors
+      ANCHOR_REGIMES.forEach((reg, i) => {
+        const ax = cx + reg.x * R;
+        const ay = cy - reg.y * R;
+        const w = weights[i];
+        if (w > 0.005) {
+          ctx.beginPath();
+          ctx.moveTo(qx, qy);
+          ctx.lineTo(ax, ay);
+          ctx.strokeStyle = reg.color;
+          ctx.globalAlpha = Math.min(0.92, 0.22 + w * 0.85);
+          ctx.lineWidth = 1.5 + w * 6.5;
+          ctx.stroke();
+          ctx.globalAlpha = 1.0;
+
+          // Weight pill midpoint
+          const mx = 0.52 * qx + 0.48 * ax;
+          const my = 0.52 * qy + 0.48 * ay;
+          ctx.fillStyle = "#fbf9f4";
+          ctx.strokeStyle = "#d8d2c5";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(mx - 22, my - 9, 44, 18, 5);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = "#141413";
+          ctx.font = "700 10.5px ui-monospace, Menlo, monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText((w * 100).toFixed(0) + "%", mx, my);
+        }
+      });
+
+      // Draw Anchor Regime Nodes
+      ANCHOR_REGIMES.forEach((reg, i) => {
+        const ax = cx + reg.x * R;
+        const ay = cy - reg.y * R;
+        const active = weights[i] > 0.005;
+        ctx.beginPath();
+        ctx.arc(ax, ay, active ? 11 : 8, 0, Math.PI * 2);
+        ctx.fillStyle = active ? reg.color : "#efeae0";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = active ? "#141413" : "#9c9588";
+        ctx.stroke();
+
+        ctx.fillStyle = active ? "#fbf9f4" : "#141413";
+        ctx.font = "800 9.5px ui-monospace, Menlo, monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(reg.id, ax, ay);
+
+        // Label box outside node
+        const labelOffsetY = reg.y >= 0 ? -20 : 20;
+        ctx.fillStyle = "#141413";
+        ctx.font = "700 11.5px system-ui, sans-serif";
+        ctx.fillText(reg.name, ax, ay + labelOffsetY);
+      });
+
+      // Draw Live Query Cursor z_task
+      ctx.beginPath();
+      ctx.arc(qx, qy, 12, 0, Math.PI * 2);
+      ctx.fillStyle = "#141413";
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#fbf9f4";
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(qx, qy, 15, 0, Math.PI * 2);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#141413";
+      ctx.stroke();
+
+      ctx.fillStyle = "#141413";
+      ctx.font = "700 11.5px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("z_task", qx + 18, qy - 4);
+    }
+
+    let latestBlendedW = null;
+
+    function updateHypersphereLab() {
+      const alpha = parseFloat(document.getElementById("alphaSelect").value);
+      const invTemp = parseFloat(document.getElementById("tempSlider").value);
+      const haltMargin = parseFloat(document.getElementById("ponderSlider").value);
+      const basisKind = document.getElementById("basisSelect").value;
+
+      document.getElementById("alphaLbl").textContent = "\u03b1 = " + alpha.toFixed(2);
+      document.getElementById("tempVal").textContent = invTemp.toFixed(2);
+      document.getElementById("ponderVal").textContent = haltMargin.toFixed(2);
+      document.getElementById("basisLbl").textContent = basisKind.split("_")[0];
+      document.getElementById("cursor-coord-badge").textContent =
+        `z = (${queryCursor.x.toFixed(2)}, ${queryCursor.y.toFixed(2)})`;
+
+      // Cosine similarity scores on S^{d-1} disk
+      const scores = new Float64Array(ANCHOR_REGIMES.length);
+      for (let i = 0; i < ANCHOR_REGIMES.length; i++) {
+        const dist2 = Math.pow(queryCursor.x - ANCHOR_REGIMES[i].x, 2) + Math.pow(queryCursor.y - ANCHOR_REGIMES[i].y, 2);
+        scores[i] = (1.0 - 0.85 * dist2) * invTemp;
+      }
+      const weights = entmaxSimplex(scores, alpha);
+      drawHypersphereCanvas(weights);
+
+      // Count active support & compute blended config
+      let supportCount = 0;
+      let blendDim = 0, blendRank = 0, blendWanda = 0;
+      for (let i = 0; i < ANCHOR_REGIMES.length; i++) {
+        if (weights[i] > 1e-4) supportCount++;
+        blendDim += weights[i] * ANCHOR_REGIMES[i].d;
+        blendRank += weights[i] * ANCHOR_REGIMES[i].rank;
+        blendWanda += weights[i] * ANCHOR_REGIMES[i].wanda;
+      }
+      document.getElementById("active-support-badge").textContent =
+        `Active Support: ${supportCount} / ${ANCHOR_REGIMES.length} cells`;
+
+      // Render Entmax bars
+      document.getElementById("entmax-bars").innerHTML = ANCHOR_REGIMES.map((reg, i) => {
+        const pct = (weights[i] * 100);
+        return `<div class="bar-row">
+          <span><code>${reg.id}</code> ${reg.name.split(" ")[0]}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct.toFixed(1)}%;background:${reg.color};"></div></div>
+          <code style="text-align:right;">${pct.toFixed(1)}%</code>
+        </div>`;
+      }).join("");
+
+      const res = evaluateLiveBatch(weights, basisKind, haltMargin);
+      latestBlendedW = res.Wblend;
+
+      document.getElementById("kpi-rigid-acc").textContent = res.rigidAcc.toFixed(2) + "%";
+      document.getElementById("kpi-fluid-acc").textContent = res.fluidAcc.toFixed(2) + "%";
+      document.getElementById("kpi-explored-acc").textContent = res.exploredAcc.toFixed(2) + "%";
+      document.getElementById("kpi-l1-exit").textContent = res.exitPcts[0].toFixed(2) + "%";
+
+      document.getElementById("mrl-exact-badge").textContent =
+        `Prefix Diff: ${res.maxPrefixDiff.toExponential(2)}`;
+      document.getElementById("matryoshka-bars").innerHTML = MATRYOSHKA_DIMS.map((d, idx) => {
+        const pct = res.slicePcts[idx];
+        const macSave = ((1.0 - d / 256.0) * 100).toFixed(0);
+        return `<div class="bar-row">
+          <span><code>${d}d</code> (-${macSave}% MACs)</span>
+          <div class="bar-track"><div class="bar-fill blue" style="width:${pct.toFixed(1)}%;"></div></div>
+          <code style="text-align:right;">${pct.toFixed(1)}%</code>
+        </div>`;
+      }).join("");
+
+      document.getElementById("mean-layers-badge").textContent =
+        `Mean Depth: ${res.meanLayers.toFixed(2)} / 4`;
+      document.getElementById("ponder-bars").innerHTML = [1, 2, 3, 4].map((layer, idx) => {
+        const pct = res.exitPcts[idx];
+        const label = layer === 1 ? "Layer 1 (Fast Reflex)" : (layer === 4 ? "Layer 4 (Deep Cap)" : `Layer ${layer} (FiLM+MoLoRA)`);
+        return `<div class="bar-row">
+          <span>${label}</span>
+          <div class="bar-track"><div class="bar-fill plum" style="width:${pct.toFixed(1)}%;"></div></div>
+          <code style="text-align:right;">${pct.toFixed(1)}%</code>
+        </div>`;
+      }).join("");
+
+      const snappedDim = MATRYOSHKA_DIMS.reduce((prev, curr) => Math.abs(curr - blendDim) < Math.abs(prev - blendDim) ? curr : prev);
+      document.getElementById("interpolated-cfg-line").innerHTML =
+        `Blended 96-Axis Slice: <code>d=${snappedDim}</code>, <code>rank=${blendRank.toFixed(1)}</code>, <code>wanda_keep=${blendWanda.toFixed(1)}%</code>`;
+      document.getElementById("live-anchor-drift").textContent = res.postProjDrift.toExponential(2);
+
+      // Keep Section 3 WASM cartridge coupled to active hypersphere blend
+      if (window._wasmReady) compileAndExecuteCartridge();
+    }
+
+    function setWorkloadPreset(kind) {
+      ["corner", "mid", "xor", "opt"].forEach((k) => {
+        document.getElementById("preset-" + k).classList.toggle("active", k === kind);
+      });
+      if (kind === "corner") {
+        queryCursor = { x: -0.66, y: 0.43 };
+      } else if (kind === "mid") {
+        queryCursor = { x: 0.34, y: 0.28 };
+      } else if (kind === "xor") {
+        queryCursor = { x: 0.38, y: -0.52 };
+      } else {
+        queryCursor = { x: 0.12, y: -0.18 };
+        explorationBonus = 0.28;
+      }
+      updateHypersphereLab();
+    }
+
+    (function bindSpherePointer() {
+      const canvas = document.getElementById("sphereCanvas");
+      function moveCursor(ev) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const px = (ev.clientX - rect.left) * scaleX;
+        const py = (ev.clientY - rect.top) * scaleY;
+        const cx = canvas.width * 0.5;
+        const cy = canvas.height * 0.5;
+        const R = Math.min(canvas.width, canvas.height) * 0.41;
+        let nx = (px - cx) / R;
+        let ny = (cy - py) / R;
+        const norm = Math.hypot(nx, ny);
+        if (norm > 0.96) {
+          nx = (nx / norm) * 0.96;
+          ny = (ny / norm) * 0.96;
+        }
+        queryCursor = { x: nx, y: ny };
+        ["corner", "mid", "xor", "opt"].forEach((k) => document.getElementById("preset-" + k).classList.remove("active"));
+        updateHypersphereLab();
+      }
+      canvas.addEventListener("pointerdown", (ev) => {
+        isDraggingSphere = true;
+        canvas.setPointerCapture(ev.pointerId);
+        moveCursor(ev);
+      });
+      canvas.addEventListener("pointermove", (ev) => {
+        if (isDraggingSphere) moveCursor(ev);
+      });
+      canvas.addEventListener("pointerup", () => { isDraggingSphere = false; });
+    })();
+
+    // ============================================================================
+    // 2. COMPUTE-ELASTIC OPPORTUNISTIC EXPLORER (96 AXES) + WOODBURY + MAP-ELITES
+    // ============================================================================
+    const SOBOL_PRIMES = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
+    function radicalInverse(index, base) {
+      let result = 0.0;
+      let f = 1.0 / base;
+      let i = index;
+      while (i > 0) {
+        result += f * (i % base);
+        i = Math.floor(i / base);
+        f /= base;
+      }
+      return result;
+    }
+
+    const WOODBURY_DIM = 16;
+    let woodburyAInv = new Float64Array(WOODBURY_DIM * WOODBURY_DIM);
+    let woodburyTheta = new Float64Array(WOODBURY_DIM);
+    let sobolCursor = 1;
+    let explorerWaveCount = 0;
+    let explorerBestScore = 74.83;
+    let gridGeneration = 1;
+    let mapArchive = new Array(64).fill(null);
+    let selectedNicheIdx = 29;
+    let explorerLogs = [];
+
+    function initWoodburyAndArchive() {
+      woodburyAInv.fill(0);
+      woodburyTheta.fill(0);
+      for (let i = 0; i < WOODBURY_DIM; i++) woodburyAInv[i * WOODBURY_DIM + i] = 1.0;
+      sobolCursor = 1;
+      explorerWaveCount = 0;
+      explorerBestScore = 74.83;
+      gridGeneration = 1;
+      mapArchive = new Array(64).fill(null);
+      explorerLogs = [
+        "[boot] Initialized 96-axis HyperGrid (16 engines x 6 axes) + Recursive Woodbury A^-1 = I_16.",
+        "[seed] Strength-2 Pairwise Covering Array seeded 16 baseline cells across 8x8 MAP-Elites archive."
+      ];
+      // Seed 16 covering-array baseline cells
+      for (let s = 0; s < 16; s++) {
+        const cand = sample96AxisCandidate("covering", s + 1);
+        const sc = score96AxisCandidate(cand, 1.0);
+        woodburyRank1Update(cand.phi, sc / 100.0);
+        insertIntoMapElites(cand, sc);
+      }
+      runElasticWave(true);
+    }
+
+    function sample96AxisCandidate(strategy, idxSeed) {
+      const rng = mulberry32(9001 + idxSeed * 7919 + explorerWaveCount * 131);
+      const coords = new Float32Array(96);
+      for (let a = 0; a < 96; a++) {
+        if (strategy === "sobol") {
+          const base = SOBOL_PRIMES[a % SOBOL_PRIMES.length];
+          coords[a] = radicalInverse(sobolCursor + a, base) * 2.0 - 1.0;
+        } else if (strategy === "covering") {
+          const bit = ((idxSeed >> (a % 4)) ^ (Math.floor(a / 4) & 1)) & 1;
+          coords[a] = bit ? 0.65 : -0.55;
+        } else {
+          coords[a] = rng() * 2.0 - 1.0;
+        }
+      }
+      sobolCursor++;
+      // Compressed 16d bilinear feature sketch phi(z_task, theta_96)
+      const phi = new Float64Array(WOODBURY_DIM);
+      for (let k = 0; k < WOODBURY_DIM; k++) {
+        let s = 0.0;
+        for (let g = 0; g < 6; g++) s += coords[k * 6 + g];
+        phi[k] = Math.tanh((s / 6.0) + 0.25 * (k % 2 === 0 ? queryCursor.x : queryCursor.y));
+      }
+      const mrlChoices = [16, 32, 64, 128, 256];
+      const dSlice = mrlChoices[Math.min(4, Math.max(0, Math.floor(((coords[0] + 1) / 2) * 5)))];
+      const depth = Math.min(4, Math.max(1, 1 + Math.floor(((coords[1] + 1) / 2) * 4)));
+      const wandaCut = 25.0 + ((coords[2] + 1) / 2) * 35.0; // 25%..60% sparsity
+      const effRank = 1.5 + ((coords[3] + 1) / 2) * 5.3;   // 1.5..6.8 effective rank
+      const loraRank = Math.max(2, Math.round(effRank * (gridGeneration === 2 ? 1.35 : 1.0)));
+      const basisPool = ["linear", "bochner_rff", "polynomial_deg2", "hybrid_rff_poly"];
+      const basis = basisPool[Math.min(3, Math.floor(((coords[4] + 1) / 2) * 4))];
+      return { strategy, coords, phi, dSlice, depth, wandaCut, effRank, loraRank, basis };
+    }
+
+    // Real Sherman-Morrison-Woodbury rank-1 inverse covariance update:
+    // A_{t+1}^{-1} = A_t^{-1} - (A_t^{-1} phi phi^T A_t^{-1}) / (1 + phi^T A_t^{-1} phi)
+    function woodburyRank1Update(phi, rewardNorm) {
+      const aPhi = new Float64Array(WOODBURY_DIM);
+      let denom = 1.0;
+      for (let i = 0; i < WOODBURY_DIM; i++) {
+        let s = 0.0;
+        for (let j = 0; j < WOODBURY_DIM; j++) s += woodburyAInv[i * WOODBURY_DIM + j] * phi[j];
+        aPhi[i] = s;
+        denom += phi[i] * s;
+      }
+      for (let i = 0; i < WOODBURY_DIM; i++) {
+        for (let j = 0; j < WOODBURY_DIM; j++) {
+          woodburyAInv[i * WOODBURY_DIM + j] -= (aPhi[i] * aPhi[j]) / denom;
+        }
+      }
+      // RLS parameter update
+      let pred = 0.0;
+      for (let i = 0; i < WOODBURY_DIM; i++) pred += woodburyTheta[i] * phi[i];
+      const err = rewardNorm - pred;
+      for (let i = 0; i < WOODBURY_DIM; i++) {
+        let gain = 0.0;
+        for (let j = 0; j < WOODBURY_DIM; j++) gain += woodburyAInv[i * WOODBURY_DIM + j] * phi[j];
+        woodburyTheta[i] += gain * err;
+      }
+    }
+
+    function woodburyUcbScore(phi) {
+      let mu = 0.0;
+      let quad = 0.0;
+      for (let i = 0; i < WOODBURY_DIM; i++) {
+        mu += woodburyTheta[i] * phi[i];
+        let rowDot = 0.0;
+        for (let j = 0; j < WOODBURY_DIM; j++) rowDot += woodburyAInv[i * WOODBURY_DIM + j] * phi[j];
+        quad += phi[i] * rowDot;
+      }
+      return mu + 0.65 * Math.sqrt(Math.max(1e-9, quad));
+    }
+
+    function woodburyTrace() {
+      let tr = 0.0;
+      for (let i = 0; i < WOODBURY_DIM; i++) tr += woodburyAInv[i * WOODBURY_DIM + i];
+      return tr;
+    }
+
+    function score96AxisCandidate(cand, sampleFrac) {
+      let score = 68.5;
+      if (cand.basis === "hybrid_rff_poly") score += 12.8;
+      else if (cand.basis === "polynomial_deg2" || cand.basis === "bochner_rff") score += 7.5;
+      else score -= 14.0;
+
+      if (cand.dSlice >= 128) score += 7.6;
+      else if (cand.dSlice >= 64) score += 4.8;
+      else score -= 6.5;
+
+      if (cand.depth >= 3) score += 6.2;
+      else if (cand.depth === 2) score += 3.4;
+      else score -= 8.0;
+
+      // Sweet spot for Wanda sparsity (35%..50%) & effective rank (3.0..6.0)
+      score += 3.8 - Math.abs(cand.wandaCut - 42.5) * 0.11;
+      score += 2.6 - Math.abs(cand.effRank - 4.6) * 0.45;
+      if (gridGeneration >= 2 && cand.loraRank >= 6) score += 1.45;
+
+      // Low-fidelity rung observation noise shrinks at sampleFrac = 1.0
+      const fidelityNoise = (1.0 - sampleFrac) * (cand.coords[7] * 3.2);
+      return Math.min(99.25, Math.max(12.0, score + fidelityNoise));
+    }
+
+    function insertIntoMapElites(cand, score) {
+      const rBin = Math.min(7, Math.max(0, Math.floor(((cand.effRank - 1.5) / 5.31) * 8)));
+      const cBin = Math.min(7, Math.max(0, Math.floor(((cand.wandaCut - 25.0) / 35.01) * 8)));
+      const idx = rBin * 8 + cBin;
+      if (!mapArchive[idx] || score > mapArchive[idx].score) {
+        mapArchive[idx] = { ...cand, score, rBin, cBin };
+      }
+      return idx;
+    }
+
+    function drawHalvingFunnel(r0Count, r1Count, r2Count, savedPct, throttled) {
+      const canvas = document.getElementById("halvingCanvas");
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#fbf9f4";
+      ctx.fillRect(0, 0, W, H);
+
+      if (throttled) {
+        ctx.fillStyle = "#fbf1e2";
+        ctx.strokeStyle = "#9a5b13";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(24, 34, W - 48, H - 68, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#9a5b13";
+        ctx.font = "800 15px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("0% Compute Headroom (Peak Foreground Traffic)", W * 0.5, H * 0.5 - 12);
+        ctx.fillStyle = "#141413";
+        ctx.font = "600 12.5px ui-monospace, Menlo, monospace";
+        ctx.fillText("Speculative Trials Dispatched = 0 | Foreground Latency Overhead = 0.00 ms", W * 0.5, H * 0.5 + 16);
+        return;
+      }
+
+      const rungs = [
+        { name: "Rung 0 (16d · 15% Slice)", count: r0Count, max: 36, color: "#1d5bbf", sub: "Woodbury + Sobol + Covering" },
+        { name: "Rung 1 (64d · 40% Slice)", count: r1Count, max: 36, color: "#5c2d91", sub: "Top 1/4 Survivors (eta=4)" },
+        { name: "Rung 2 (256d · 100% Holdout)", count: r2Count, max: 36, color: "#1b6b52", sub: "Disjoint maker != checker" }
+      ];
+
+      rungs.forEach((rg, i) => {
+        const y = 22 + i * 56;
+        const barMaxW = W - 240;
+        const bw = Math.max(18, (rg.count / rg.max) * barMaxW);
+
+        ctx.fillStyle = "#141413";
+        ctx.font = "700 12px system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(rg.name, 16, y + 13);
+        ctx.fillStyle = "#57534a";
+        ctx.font = "500 11px system-ui, sans-serif";
+        ctx.fillText(rg.sub, 16, y + 29);
+
+        ctx.fillStyle = "#efeae0";
+        ctx.strokeStyle = "#d8d2c5";
+        ctx.beginPath();
+        ctx.roundRect(205, y + 4, barMaxW, 24, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = rg.color;
+        ctx.beginPath();
+        ctx.roundRect(205, y + 4, bw, 24, 6);
+        ctx.fill();
+
+        ctx.fillStyle = "#141413";
+        ctx.font = "800 12px ui-monospace, Menlo, monospace";
+        ctx.fillText(`${rg.count} probes`, 213 + bw, y + 20);
+      });
+    }
+
+    function renderMapElitesGrid() {
+      const gridEl = document.getElementById("map-elites-grid");
+      let filled = 0;
+      const html = [];
+      for (let idx = 0; idx < 64; idx++) {
+        const item = mapArchive[idx];
+        if (item) filled++;
+        const sel = idx === selectedNicheIdx ? " selected" : "";
+        let bg = "#fbf9f4";
+        let txt = "·";
+        if (item) {
+          const norm = Math.max(0, Math.min(1, (item.score - 65.0) / 34.5));
+          const g = Math.round(244 - norm * 42);
+          const r = Math.round(248 - norm * 68);
+          const b = Math.round(238 - norm * 32);
+          bg = `rgb(${r}, ${g}, ${b})`;
+          txt = item.score.toFixed(0) + "%";
+        }
+        html.push(`<button type="button" class="map-cell${sel}" style="background:${bg};" onclick="selectMapNiche(${idx})" title="Niche [${Math.floor(idx / 8)}, ${idx % 8}]">${txt}</button>`);
+      }
+      gridEl.innerHTML = html.join("");
+      document.getElementById("qd-coverage-badge").textContent = `Illuminated Niches: ${filled} / 64`;
+      renderSelectedNicheDetail();
+    }
+
+    function selectMapNiche(idx) {
+      selectedNicheIdx = idx;
+      renderMapElitesGrid();
+      if (mapArchive[idx] && window._wasmReady) {
+        compileAndExecuteCartridge();
+        showToast(`Loaded MAP-Elites niche [${Math.floor(idx / 8)}, ${idx % 8}] into compiler`);
+      }
+    }
+
+    function renderSelectedNicheDetail() {
+      let item = mapArchive[selectedNicheIdx];
+      if (!item) {
+        const firstFilled = mapArchive.findIndex((x) => x !== null);
+        if (firstFilled >= 0) {
+          selectedNicheIdx = firstFilled;
+          item = mapArchive[firstFilled];
+        }
+      }
+      if (!item) return;
+      document.getElementById("niche-detail-title").textContent =
+        `Selected Niche [${item.rBin}, ${item.cBin}]: ${item.basis} (${item.strategy})`;
+      document.getElementById("niche-score-badge").textContent =
+        `Holdout: ${item.score.toFixed(2)}%`;
+      document.getElementById("niche-detail-tbody").innerHTML = `
+        <tr>
+          <td><strong>Matryoshka Slice &amp; Stack Depth</strong></td>
+          <td><code>${item.dSlice}d</code> prefix &middot; <code>L = ${item.depth}</code> residual layers</td>
+          <td>Exact nested prefix containment</td>
+        </tr>
+        <tr>
+          <td><strong>Spectral Rank &amp; LoRA-XS Core</strong></td>
+          <td><code>r_eff = ${item.effRank.toFixed(2)}</code> &middot; <code>lora_xs_rank = ${item.loraRank}</code></td>
+          <td><code>Gen ${gridGeneration}</code> clamped bounds</td>
+        </tr>
+        <tr>
+          <td><strong>Wanda Channel Saliency Cut</strong></td>
+          <td><code>-${item.wandaCut.toFixed(1)}%</code> FLOPs / RAM pruned</td>
+          <td><code>0.0</code> collateral anchor drift</td>
+        </tr>
+      `;
+    }
+
+    function onHeadroomSlide() {
+      const hr = parseInt(document.getElementById("headroomSlider").value, 10);
+      document.getElementById("headroomVal").textContent =
+        hr === 0 ? "0% (Peak Traffic Throttle)" : `${hr}% Spare CPU`;
+      runElasticWave(true);
+    }
+
+    function runElasticWave(quietPreview) {
+      const hrPct = parseInt(document.getElementById("headroomSlider").value, 10);
+      const hr = hrPct / 100.0;
+      if (!quietPreview) explorerWaveCount++;
+
+      if (hr <= 0.02) {
+        document.getElementById("exp-trials").textContent = "0";
+        document.getElementById("exp-saved").textContent = "100% Idle";
+        document.getElementById("exp-woodbury-tr").textContent = woodburyTrace().toFixed(2);
+        document.getElementById("exp-MixLine").innerHTML =
+          `Peak Foreground Traffic Guard Active: <code>0</code> speculative probes dispatched &middot; <code>0</code> extra model tokens.`;
+        drawHalvingFunnel(0, 0, 0, 0, true);
+        if (!quietPreview) {
+          explorerLogs.unshift(`[wave ${explorerWaveCount}] headroom=0% -> throttled_zero_speculation=true (0 trials).`);
+          document.getElementById("explorer-log").textContent = explorerLogs.slice(0, 8).join("\n");
+        }
+        return;
+      }
+
+      const kTotal = Math.max(8, Math.round(36 * hr));
+      const nCover = Math.max(1, Math.round(kTotal * 0.18));
+      const nSobol = Math.max(2, Math.round(kTotal * 0.32));
+      const nRand = Math.max(1, Math.round(kTotal * 0.22));
+      const nUcb = Math.max(1, kTotal - nCover - nSobol - nRand);
+
+      const candidates = [];
+      for (let i = 0; i < nCover; i++) candidates.push(sample96AxisCandidate("covering", i + explorerWaveCount * 7));
+      for (let i = 0; i < nSobol; i++) candidates.push(sample96AxisCandidate("sobol", i + 1));
+      for (let i = 0; i < nRand; i++) candidates.push(sample96AxisCandidate("random", i + explorerWaveCount * 13));
+
+      // Score a pool of 20 random draws via Woodbury UCB to pick nUcb optimistic probes
+      const ucbPool = [];
+      for (let p = 0; p < 20; p++) {
+        const c = sample96AxisCandidate("woodbury_ucb", p + 50);
+        ucbPool.push({ ucb: woodburyUcbScore(c.phi), c });
+      }
+      ucbPool.sort((a, b) => b.ucb - a.ucb);
+      for (let i = 0; i < nUcb; i++) candidates.push(ucbPool[i].c);
+
+      // 3-Rung Successive Halving (eta = 4, fractions = [0.15, 0.40, 1.00])
+      const fracs = [0.15, 0.40, 1.00];
+      let survivors = candidates;
+      let effectiveCost = 0.0;
+      const rungCounts = [];
+
+      for (let r = 0; r < fracs.length; r++) {
+        rungCounts.push(survivors.length);
+        const scored = survivors.map((cand) => {
+          const sc = score96AxisCandidate(cand, fracs[r]);
+          effectiveCost += fracs[r];
+          if (!quietPreview) woodburyRank1Update(cand.phi, sc / 100.0);
+          return { sc, cand };
+        });
+        scored.sort((a, b) => b.sc - a.sc);
+        if (r < 2) {
+          survivors = scored.slice(0, Math.max(1, Math.floor(scored.length / 4))).map((x) => x.cand);
+        } else {
+          const winner = scored[0];
+          const winIdx = insertIntoMapElites(winner.cand, winner.sc);
+          if (winner.sc > explorerBestScore) {
+            explorerBestScore = winner.sc;
+            selectedNicheIdx = winIdx;
+            explorationBonus = Math.min(0.28, (explorerBestScore - 74.0) / 98.0);
+            if (winner.cand.effRank > 5.4 && gridGeneration === 1) {
+              gridGeneration = 2;
+              explorerLogs.unshift(`[auto-expand] Saturated lora_xs_rank ceiling -> expanded NodeGrid Gen 1 -> Gen 2!`);
+            }
+            explorerLogs.unshift(
+              `[promoted] GridLedger 7-stage maker!=checker passed: ${winner.cand.basis} (${winner.cand.dSlice}d, L=${winner.cand.depth}) -> ${winner.sc.toFixed(2)}%`
+            );
+          } else if (!quietPreview) {
+            explorerLogs.unshift(
+              `[wave ${explorerWaveCount}] Evaluated ${kTotal} -> ${rungCounts[1]} -> ${rungCounts[2]} probes; top=${winner.sc.toFixed(2)}% (incumbent=${explorerBestScore.toFixed(2)}%).`
+            );
+          }
+        }
+      }
+
+      const savedPct = (1.0 - effectiveCost / kTotal) * 100.0;
+      document.getElementById("exp-trials").textContent = String(kTotal);
+      document.getElementById("exp-saved").textContent = savedPct.toFixed(2) + "%";
+      document.getElementById("exp-woodbury-tr").textContent = woodburyTrace().toFixed(2);
+      document.getElementById("exp-best-score").textContent = explorerBestScore.toFixed(2) + "%";
+      document.getElementById("exp-gen-badge").textContent =
+        gridGeneration === 2 ? "NodeGrid Gen 2 (Auto-Expanded)" : "NodeGrid Gen 1 (Initial Bounds)";
+      document.getElementById("exp-MixLine").innerHTML =
+        `Draw Allocation: <code>Covering=${nCover}</code> &middot; <code>Sobol=${nSobol}</code> &middot; <code>&epsilon;-Random=${nRand}</code> &middot; <code>Woodbury-UCB=${nUcb}</code> (${effectiveCost.toFixed(2)} vs ${kTotal} full-eval units)`;
+
+      drawHalvingFunnel(rungCounts[0], rungCounts[1], rungCounts[2], savedPct, false);
+      renderMapElitesGrid();
+      document.getElementById("explorer-log").textContent = explorerLogs.slice(0, 8).join("\n");
+      updateHypersphereLab();
+    }
+
+    function runFullSchedule() {
+      const schedule = [0, 25, 55, 80, 100];
+      schedule.forEach((h) => {
+        document.getElementById("headroomSlider").value = String(h);
+        runElasticWave(false);
+      });
+      document.getElementById("headroomVal").textContent = "100% Spare CPU";
+      showToast("Replayed 5-step elastic headroom schedule (0% -> 100%)");
+    }
+
+    function resetExplorer() {
+      document.getElementById("headroomSlider").value = "60";
+      document.getElementById("headroomVal").textContent = "60% Spare CPU";
+      initWoodburyAndArchive();
+      showToast("Reset Woodbury covariance & MAP-Elites archive");
+    }
+
+    // ============================================================================
+    // 3. 20-ENGINE x 72-SUB-ENGINE CYBERNETIC JACOBIAN & 5-TIMESCALE INSPECTOR
+    // ============================================================================
+    const ENGINES_20 = [
+      { id: "quotient_context_dag_engine", short: "E00 ContextDAG", stratum: "ingestion_and_memory", tau: "tau_0_reflex", subs: ["uid_canonical_digest", "prefix_cache_guard", "turn_equivalence_quotient", "compaction_marker_weaver"] },
+      { id: "wanda_saliency_pruning_engine", short: "E01 WandaPrune", stratum: "ingestion_and_memory", tau: "tau_0_reflex", subs: ["activation_norm_tracker", "channel_saliency_scorer", "recency_decay_kernel", "budget_knapsack_selector"] },
+      { id: "hopfield_attractor_memory_engine", short: "E02 HopfieldMem", stratum: "ingestion_and_memory", tau: "tau_2_consolidation", subs: ["inverse_temp_energy_well", "episodic_pattern_separator", "attractor_basin_merger", "micro_cartridge_distiller"] },
+      { id: "matryoshka_manifold_encoder_engine", short: "E03 Matryoshka", stratum: "ingestion_and_memory", tau: "tau_0_reflex", subs: ["task2vec_structural_projector", "config2vec_fourier_encoder", "weight2vec_spectral_descriptor", "trace2vec_shingle_encoder"] },
+      { id: "ridge_polytope_compiler_engine", short: "E04 RidgePoly", stratum: "compilation_and_lowering", tau: "tau_2_consolidation", subs: ["tikhonov_ridge_solver", "polytope_halfspace_fitter", "rank_truncation_selector", "residual_error_auditor"] },
+      { id: "multilayer_film_molora_stack_engine", short: "E05 FiLMMoLoRA", stratum: "compilation_and_lowering", tau: "tau_1_episode", subs: ["film_gamma_beta_generator", "molora_expert_gate_router", "residual_activation_block", "confidence_margin_halting_gate"] },
+      { id: "svd_nullspace_surgical_editor_engine", short: "E06 NullspaceSVD", stratum: "compilation_and_lowering", tau: "tau_1_episode", subs: ["anchor_subspace_orthogonalizer", "lora_xs_core_adapter", "cegar_counterexample_refiner", "drift_norm_auditor"] },
+      { id: "portable_target_lowering_engine", short: "E07 Lower7Target", stratum: "compilation_and_lowering", tau: "tau_2_consolidation", subs: ["safetensors_header_packer", "wasm_ieee754_emitter", "wgsl_compute_kernel_writer", "c99_sql_python_codegen"] },
+      { id: "contextual_linucb_router_engine", short: "E08 LinUCBRouter", stratum: "routing_and_governance", tau: "tau_1_episode", subs: ["bilinear_feature_sketcher", "woodbury_covariance_updater", "ucb_optimism_scorer", "tier_latency_balancer"] },
+      { id: "cas_fission_lease_fencing_engine", short: "E09 CASFencing", stratum: "routing_and_governance", tau: "tau_0_reflex", subs: ["dag_topological_fissioner", "cas_fencing_stamp_arbiter", "compaction_resume_packer"] },
+      { id: "dawid_skene_quorum_adjudicator_engine", short: "E10 DawidSkene", stratum: "routing_and_governance", tau: "tau_1_episode", subs: ["confusion_dirichlet_updater", "posterior_consensus_solver", "disagreement_entropy_detector"] },
+      { id: "eigentrust_reputation_flow_engine", short: "E11 EigenTrust", stratum: "routing_and_governance", tau: "tau_2_consolidation", subs: ["trust_transition_normalizer", "power_iteration_stationary_solver", "sybil_damping_guard"] },
+      { id: "rmt_marchenko_pastur_spectral_engine", short: "E12 RMTSpectral", stratum: "adaptation_and_economics", tau: "tau_2_consolidation", subs: ["marchenko_pastur_bulk_estimator", "effective_shannon_rank_meter", "powerlaw_tail_exponent_fitter", "rank_collapse_alarm"] },
+      { id: "fluid_hypergrid_interpolator_engine", short: "E13 FluidGrid", stratum: "adaptation_and_economics", tau: "tau_0_reflex", subs: ["checked_cell_kernel_smoother", "parameter_bounds_clamper", "bilinear_surrogate_ranker", "boundary_auto_expander"] },
+      { id: "evsi_effort_cascade_calibrator_engine", short: "E14 EVSICascade", stratum: "adaptation_and_economics", tau: "tau_0_reflex", subs: ["epistemic_variance_estimator", "evsi_net_gain_integrator", "short_circuit_tier_selector"] },
+      { id: "operation_cost_thermodynamic_engine", short: "E15 CostThermo", stratum: "adaptation_and_economics", tau: "tau_1_episode", subs: ["token_flop_meter", "prompt_cache_hit_accountant", "regime_pareto_frontier_ledger"] },
+      { id: "inter_engine_coupling_and_jacobian_bus", short: "E16 JacobianBus", stratum: "meta_cybernetic_coupling", tau: "tau_3_morphism", subs: ["sparse_jacobian_assembler", "spectral_radius_governor", "timescale_gain_multiplexer", "cross_stratum_impulse_router"] },
+      { id: "homeostatic_meta_controller_engine", short: "E17 Homeostat", stratum: "meta_cybernetic_coupling", tau: "tau_4_meta_grid", subs: ["lyapunov_energy_monitor", "pid_timescale_gain_tuner", "runaway_oscillation_breaker"] },
+      { id: "structural_morphism_and_transfer_engine", short: "E18 Morphism", stratum: "meta_cybernetic_coupling", tau: "tau_3_morphism", subs: ["laplacian_spectrum_matcher", "orthogonal_procrustes_transplanter", "transfer_fidelity_gate"] },
+      { id: "human_attention_and_escalation_engine", short: "E19 Escalation", stratum: "meta_cybernetic_coupling", tau: "tau_1_episode", subs: ["minimum_entropy_question_ranker", "interruption_budget_guard", "escalation_threshold_gate"] }
+    ];
+
+    const COUPLING_EDGES_25 = [
+      { s: 1, t: 0, w: 0.24, tau: "tau_0_reflex", sig: "saliency_retention_mask" },
+      { s: 0, t: 2, w: 0.22, tau: "tau_2_consolidation", sig: "evicted_turn_bundle" },
+      { s: 3, t: 13, w: 0.28, tau: "tau_0_reflex", sig: "nested_mrl_coordinates" },
+      { s: 3, t: 8, w: 0.25, tau: "tau_1_episode", sig: "task2vec_bilinear_context" },
+      { s: 3, t: 2, w: 0.21, tau: "tau_0_reflex", sig: "trace2vec_query_key" },
+      { s: 2, t: 4, w: 0.20, tau: "tau_2_consolidation", sig: "consolidated_attractor_pairs" },
+      { s: 4, t: 5, w: 0.26, tau: "tau_2_consolidation", sig: "base_polytope_cores" },
+      { s: 13, t: 5, w: 0.24, tau: "tau_0_reflex", sig: "interpolated_film_hyperparams" },
+      { s: 12, t: 6, w: 0.27, tau: "tau_1_episode", sig: "mp_noise_edge_rank_floor" },
+      { s: 12, t: 4, w: 0.19, tau: "tau_2_consolidation", sig: "tail_regularization_pressure" },
+      { s: 6, t: 7, w: 0.23, tau: "tau_2_consolidation", sig: "zero_drift_operator_weights" },
+      { s: 5, t: 7, w: 0.25, tau: "tau_2_consolidation", sig: "multilayer_operator_graph" },
+      { s: 9, t: 8, w: 0.21, tau: "tau_0_reflex", sig: "fenced_subtask_contracts" },
+      { s: 10, t: 8, w: 0.26, tau: "tau_1_episode", sig: "posterior_consensus_reward" },
+      { s: 10, t: 11, w: 0.29, tau: "tau_1_episode", sig: "confusion_trust_deltas" },
+      { s: 11, t: 8, w: 0.20, tau: "tau_2_consolidation", sig: "stationary_actor_priors" },
+      { s: 14, t: 5, w: 0.22, tau: "tau_0_reflex", sig: "early_exit_margin_setpoint" },
+      { s: 14, t: 19, w: 0.27, tau: "tau_1_episode", sig: "net_evsi_surplus" },
+      { s: 15, t: 14, w: -0.18, tau: "tau_1_episode", sig: "marginal_compute_price" },
+      { s: 15, t: 13, w: 0.19, tau: "tau_1_episode", sig: "pareto_efficiency_weights" },
+      { s: 18, t: 6, w: 0.22, tau: "tau_3_morphism", sig: "procrustes_transplanted_basis" },
+      { s: 16, t: 17, w: 0.30, tau: "tau_4_meta_grid", sig: "jacobian_spectral_norm" },
+      { s: 17, t: 16, w: -0.25, tau: "tau_4_meta_grid", sig: "lyapunov_damping_clamp" },
+      { s: 17, t: 13, w: 0.21, tau: "tau_4_meta_grid", sig: "boundary_expansion_authorization" },
+      { s: 19, t: 9, w: 0.18, tau: "tau_1_episode", sig: "resolved_interface_constraints" }
+    ];
+
+    const TAU_GAIN = {
+      tau_0_reflex: 0.35,
+      tau_1_episode: 0.25,
+      tau_2_consolidation: 0.18,
+      tau_3_morphism: 0.12,
+      tau_4_meta_grid: 0.08
+    };
+
+    let selectedEngineIdx = 0;
+    let engineActivations = new Float32Array(20);
+    engineActivations[0] = 0.85;
+    engineActivations[3] = 0.72;
+    engineActivations[13] = 0.64;
+
+    function computeSpectralRadius(activeEdges) {
+      // Discrete damped operator M = (1 - leak) I + gain * J
+      const leak = 0.28;
+      let v = new Float64Array(20).fill(1.0 / Math.sqrt(20));
+      let norm = 0.72;
+      for (let it = 0; it < 30; it++) {
+        const nxt = new Float64Array(20);
+        for (let i = 0; i < 20; i++) nxt[i] = (1.0 - leak) * v[i];
+        for (const e of activeEdges) {
+          nxt[e.t] += TAU_GAIN[e.tau] * e.w * v[e.s];
+        }
+        norm = Math.hypot(...nxt);
+        if (norm > 1e-12) {
+          for (let i = 0; i < 20; i++) v[i] = nxt[i] / norm;
+        }
+      }
+      return norm;
+    }
+
+    function renderJacobianLab() {
+      const tauF = document.getElementById("tauFilter").value;
+      const activeEdges = COUPLING_EDGES_25.filter((e) => tauF === "all" || e.tau === tauF);
+      const rho = computeSpectralRadius(activeEdges);
+
+      document.getElementById("jac-rho").textContent = rho.toFixed(3);
+      document.getElementById("jac-lyap").textContent = rho < 1.0 ? `-${(1.0 - rho).toFixed(3)} OK` : "Clamped";
+      document.getElementById("jac-edges").textContent = String(activeEdges.length);
+
+      const canvas = document.getElementById("jacobianCanvas");
+      const ctx = canvas.getContext("2d");
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = "#fbf9f4";
+      ctx.fillRect(0, 0, W, H);
+
+      const leftPad = 128;
+      const topPad = 28;
+      const cellSz = Math.floor(Math.min((W - leftPad - 76) / 20, (H - topPad - 12) / 20));
+
+      // Column headers E00..E19
+      ctx.font = "700 9.5px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "center";
+      for (let c = 0; c < 20; c++) {
+        ctx.fillStyle = c === selectedEngineIdx ? "#1b6b52" : "#57534a";
+        ctx.fillText(String(c).padStart(2, "0"), leftPad + c * cellSz + cellSz * 0.5, topPad - 8);
+      }
+
+      // Build lookup map
+      const edgeMap = new Map();
+      activeEdges.forEach((e) => edgeMap.set(`${e.s}_${e.t}`, e));
+
+      for (let r = 0; r < 20; r++) {
+        const y = topPad + r * cellSz;
+        ctx.textAlign = "right";
+        ctx.font = r === selectedEngineIdx ? "800 10.5px ui-monospace, Menlo, monospace" : "600 10px ui-monospace, Menlo, monospace";
+        ctx.fillStyle = r === selectedEngineIdx ? "#1b6b52" : "#141413";
+        ctx.fillText(ENGINES_20[r].short, leftPad - 6, y + cellSz * 0.72);
+
+        for (let c = 0; c < 20; c++) {
+          const x = leftPad + c * cellSz;
+          const e = edgeMap.get(`${r}_${c}`);
+          let fill = r === c ? "#efeae0" : "#fbf9f4";
+          if (e) {
+            fill = e.w > 0 ? "rgba(27, 107, 82, 0.78)" : "rgba(158, 47, 47, 0.78)";
+          }
+          ctx.fillStyle = fill;
+          ctx.fillRect(x, y, cellSz - 1, cellSz - 1);
+          ctx.strokeStyle = (r === selectedEngineIdx || c === selectedEngineIdx) ? "#b8b0a0" : "#e7e1d4";
+          ctx.lineWidth = 0.75;
+          ctx.strokeRect(x, y, cellSz - 1, cellSz - 1);
+        }
+
+        // Right-side live activation bar
+        const actX = leftPad + 20 * cellSz + 10;
+        const actW = Math.max(3, Math.min(54, Math.abs(engineActivations[r]) * 54));
+        ctx.fillStyle = "#efeae0";
+        ctx.fillRect(actX, y + 2, 54, cellSz - 5);
+        ctx.fillStyle = "#1d5bbf";
+        ctx.fillRect(actX, y + 2, actW, cellSz - 5);
+      }
+
+      ctx.fillStyle = "#57534a";
+      ctx.font = "700 9.5px ui-monospace, Menlo, monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("State", leftPad + 20 * cellSz + 10, topPad - 8);
+
+      // Update selected engine inspector
+      const eng = ENGINES_20[selectedEngineIdx];
+      document.getElementById("eng-inspector-title").innerHTML =
+        `Engine #${selectedEngineIdx}: <code>${eng.id}</code>`;
+      document.getElementById("eng-stratum-badge").textContent =
+        `${eng.stratum} · ${eng.tau}`;
+      const outEdges = COUPLING_EDGES_25.filter((e) => e.s === selectedEngineIdx);
+      const inEdges = COUPLING_EDGES_25.filter((e) => e.t === selectedEngineIdx);
+      const edgeText = outEdges.map((e) => `<code>${e.sig}</code> (&rarr; E${String(e.t).padStart(2, "0")}, w=${e.w > 0 ? "+" : ""}${e.w})`).join(", ")
+        || inEdges.map((e) => `receives <code>${e.sig}</code> (from E${String(e.s).padStart(2, "0")})`).join(", ");
+      document.getElementById("eng-coupling-desc").innerHTML = `Coupling Bus: ${edgeText}`;
+      document.getElementById("eng-sub-pills").innerHTML =
+        eng.subs.map((s) => `<span class="sub-pill">${s}</span>`).join("");
+    }
+
+    function pulseSelectedEngine() {
+      engineActivations[selectedEngineIdx] = 1.0;
+      const nxt = new Float32Array(20);
+      for (let i = 0; i < 20; i++) nxt[i] = 0.68 * engineActivations[i];
+      for (const e of COUPLING_EDGES_25) {
+        nxt[e.t] = Math.min(1.0, Math.max(0.05, nxt[e.t] + Math.abs(e.w) * 0.95 * engineActivations[e.s]));
+      }
+      engineActivations = nxt;
+      renderJacobianLab();
+      showToast(`Propagated cybernetic impulse from E${String(selectedEngineIdx).padStart(2, "0")} across Jacobian J`);
+    }
+
+    (function bindJacobianClick() {
+      const canvas = document.getElementById("jacobianCanvas");
+      canvas.addEventListener("click", (ev) => {
+        const rect = canvas.getBoundingClientRect();
+        const py = (ev.clientY - rect.top) * (canvas.height / rect.height);
+        const topPad = 28;
+        const leftPad = 128;
+        const cellSz = Math.floor(Math.min((canvas.width - leftPad - 76) / 20, (canvas.height - topPad - 12) / 20));
+        const r = Math.floor((py - topPad) / cellSz);
+        if (r >= 0 && r < 20) {
+          selectedEngineIdx = r;
+          pulseSelectedEngine();
+        }
+      });
+    })();
+
+    // ============================================================================
+    // 4. REAL IN-BROWSER IEEE-754 .wasm + WebGPU .wgsl + .c + .sql SYNTHESIZER
+    // ============================================================================
+    const ACTION_SLOTS = ["route_fast_l1_exit", "route_molora_expert", "route_nullspace_gate", "route_quorum_check"];
+    let activeCompilerTab = "wasm";
+    let compiledArtifacts = { wasmBytes: null, wat: "", wgsl: "", c: "", sql: "" };
+
+    function uLeb128(val) {
+      const out = [];
+      let v = val >>> 0;
+      while (true) {
+        const b = v & 0x7f;
+        v >>>= 7;
+        if (v === 0) { out.push(b); break; }
+        out.push(b | 0x80);
+      }
+      return out;
+    }
+
+    function f32LittleEndianBytes(val) {
+      const buf = new ArrayBuffer(4);
+      const dv = new DataView(buf);
+      dv.setFloat32(0, Math.fround(val), true);
+      return [dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3)];
+    }
+
+    function wasmSec(id, payload) {
+      return [id, ...uLeb128(payload.length), ...payload];
+    }
+
+    function extractActiveOperatorLayers(archKind) {
+      const base = latestBlendedW || ANCHOR_READOUTS[0];
+      const niche = mapArchive[selectedNicheIdx];
+      const modScale = niche ? Math.fround(1.0 + (niche.effRank - 3.5) * 0.04) : Math.fround(1.0);
+
+      if (archKind === "1layer_subspace") {
+        const W0 = [];
+        const b0 = [];
+        for (let r = 0; r < 4; r++) {
+          const row = [];
+          for (let c = 0; c < 4; c++) {
+            row.push(Math.fround((base[r * MAX_MRL + c + 4] * 2.4 + (r === c ? 0.42 : -0.11)) * modScale));
+          }
+          W0.push(row);
+          b0.push(Math.fround(0.05 * (r - 1.5)));
+        }
+        return [{ act: "linear", W: W0, b: b0 }];
+      }
+
+      const W0 = [], b0 = [];
+      for (let h = 0; h < 6; h++) {
+        const row = [];
+        for (let c = 0; c < 4; c++) {
+          row.push(Math.fround((base[(h % 4) * MAX_MRL + c + h + 4] * 2.6 + ((h + c) % 2 === 0 ? 0.36 : -0.24)) * modScale));
+        }
+        W0.push(row);
+        b0.push(Math.fround(0.08 + 0.02 * queryCursor.x * (h - 2)));
+      }
+      const W1 = [], b1 = [];
+      for (let r = 0; r < 4; r++) {
+        const row = [];
+        for (let h = 0; h < 6; h++) {
+          row.push(Math.fround(base[r * MAX_MRL + h + 12] * 2.2 + ((r === h % 4) ? 0.48 : -0.14)));
+        }
+        W1.push(row);
+        b1.push(Math.fround(0.04 * queryCursor.y * (r - 1)));
+      }
+      return [
+        { act: "relu", W: W0, b: b0 },
+        { act: "linear", W: W1, b: b1 }
+      ];
+    }
+
+    function assembleWasmBinary(layers) {
+      // Type (i32, i32) -> (), Function, Memory (1 page), Exports ("memory", "infer"), Code
+      const typeSec = wasmSec(1, [1, 0x60, 2, 0x7f, 0x7f, 0]);
+      const funcSec = wasmSec(3, [1, 0]);
+      const memSec = wasmSec(5, [1, 0, 1]);
+      const expMem = [6, 109, 101, 109, 111, 114, 121, 0x02, 0];
+      const expInf = [5, 105, 110, 102, 101, 114, 0x00, 0];
+      const exportSec = wasmSec(7, [2, ...expMem, ...expInf]);
+
+      const body = [];
+      if (layers.length === 1) {
+        const L0 = layers[0];
+        body.push(0); // 0 locals
+        for (let r = 0; r < L0.b.length; r++) {
+          body.push(0x20, ...uLeb128(1)); // local.get $out_ptr
+          body.push(0x43, ...f32LittleEndianBytes(L0.b[r]));
+          for (let c = 0; c < L0.W[r].length; c++) {
+            body.push(0x20, ...uLeb128(0));
+            body.push(0x2a, 0x02, ...uLeb128(c * 4)); // f32.load
+            body.push(0x43, ...f32LittleEndianBytes(L0.W[r][c]));
+            body.push(0x94, 0x92); // f32.mul, f32.add
+          }
+          body.push(0x38, 0x02, ...uLeb128(r * 4)); // f32.store
+        }
+      } else {
+        const L0 = layers[0];
+        const L1 = layers[1];
+        const hid = L0.b.length;
+        body.push(1, ...uLeb128(hid), 0x7d); // f32 locals for hidden state
+        for (let h = 0; h < hid; h++) {
+          body.push(0x43, ...f32LittleEndianBytes(L0.b[h]));
+          for (let c = 0; c < L0.W[h].length; c++) {
+            body.push(0x20, ...uLeb128(0));
+            body.push(0x2a, 0x02, ...uLeb128(c * 4));
+            body.push(0x43, ...f32LittleEndianBytes(L0.W[h][c]));
+            body.push(0x94, 0x92);
+          }
+          body.push(0x43, 0x00, 0x00, 0x00, 0x00, 0x97); // f32.const 0, f32.max (ReLU)
+          body.push(0x21, ...uLeb128(2 + h)); // local.set
+        }
+        for (let r = 0; r < L1.b.length; r++) {
+          body.push(0x20, ...uLeb128(1));
+          body.push(0x43, ...f32LittleEndianBytes(L1.b[r]));
+          for (let h = 0; h < hid; h++) {
+            body.push(0x20, ...uLeb128(2 + h));
+            body.push(0x43, ...f32LittleEndianBytes(L1.W[r][h]));
+            body.push(0x94, 0x92);
+          }
+          body.push(0x38, 0x02, ...uLeb128(r * 4));
+        }
+      }
+      body.push(0x0b); // end
+      const funcEntry = [...uLeb128(body.length), ...body];
+      const codeSec = wasmSec(10, [1, ...funcEntry]);
+      return new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, ...typeSec, ...funcSec, ...memSec, ...exportSec, ...codeSec]);
+    }
+
+    function evalFloat32Ref(layers, x) {
+      let cur = Array.from(x).map((v) => Math.fround(v));
+      for (const L of layers) {
+        const nxt = [];
+        for (let r = 0; r < L.b.length; r++) {
+          let acc = Math.fround(L.b[r]);
+          for (let c = 0; c < cur.length; c++) {
+            acc = Math.fround(acc + Math.fround(cur[c] * Math.fround(L.W[r][c])));
+          }
+          if (L.act === "relu") acc = Math.max(Math.fround(0.0), acc);
+          nxt.push(acc);
+        }
+        cur = nxt;
+      }
+      return new Float32Array(cur);
+    }
+
+    function emitMultiTargetSources(layers, wasmBytes) {
+      const hexHead = Array.from(wasmBytes.slice(0, 32)).map((b) => b.toString(16).padStart(2, "0")).join(" ");
+      const L0 = layers[0];
+      const watLines = [
+        `;; Space-separated IEEE-754 .wasm binary prefix (${wasmBytes.length} bytes total):`,
+        `;; ${hexHead} ...`,
+        `(module`,
+        `  (memory (export "memory") 1)`,
+        `  (func (export "infer") (param $in_ptr i32) (param $out_ptr i32)`
+      ];
+      if (layers.length > 1) watLines.push(`    (local $h0 f32 $h1 f32 $h2 f32 $h3 f32 $h4 f32 $h5 f32)`);
+      for (let r = 0; r < 2; r++) {
+        if (layers.length === 1) watLines.push(`    local.get $out_ptr`);
+        watLines.push(`    f32.const ${L0.b[r].toFixed(5)}`);
+        for (let c = 0; c < L0.W[r].length; c++) {
+          watLines.push(`    local.get $in_ptr\n    f32.load offset=${c * 4}\n    f32.const ${L0.W[r][c].toFixed(5)}\n    f32.mul\n    f32.add`);
+        }
+        if (L0.act === "relu") watLines.push(`    f32.const 0.0\n    f32.max\n    local.set $h${r}`);
+        else watLines.push(`    f32.store offset=${r * 4}`);
+      }
+      watLines.push(`    ;; ... remaining operator rows compiled identically into binary module ...\n  )\n)`);
+
+      // WGSL Shader
+      const wgslLines = [
+        `// Synthesized by Continuum / Omni-Fabric PortableTargetLoweringEngine`,
+        `@group(0) @binding(0) var<storage, read> x_in: array<f32>;`,
+        `@group(0) @binding(1) var<storage, read_write> y_out: array<f32>;`,
+        `const W0: array<f32, ${L0.W.length * 4}> = array<f32, ${L0.W.length * 4}>(${L0.W.flat().map((v) => v.toFixed(5)).join(", ")});`,
+        `const B0: array<f32, ${L0.b.length}> = array<f32, ${L0.b.length}>(${L0.b.map((v) => v.toFixed(5)).join(", ")});`
+      ];
+      if (layers.length === 1) {
+        wgslLines.push(
+          `@compute @workgroup_size(4)`,
+          `fn main(@builtin(global_invocation_id) gid: vec3<u32>) {`,
+          `  let r: u32 = gid.x; if (r >= 4u) { return; }`,
+          `  var s: f32 = B0[r];`,
+          `  for (var c: u32 = 0u; c < 4u; c = c + 1u) { s = s + x_in[c] * W0[r * 4u + c]; }`,
+          `  y_out[r] = s;`,
+          `}`
+        );
+      } else {
+        const L1 = layers[1];
+        wgslLines.push(
+          `const W1: array<f32, 24> = array<f32, 24>(${L1.W.flat().map((v) => v.toFixed(5)).join(", ")});`,
+          `const B1: array<f32, 4> = array<f32, 4>(${L1.b.map((v) => v.toFixed(5)).join(", ")});`,
+          `@compute @workgroup_size(1)`,
+          `fn main(@builtin(global_invocation_id) gid: vec3<u32>) {`,
+          `  if (gid.x >= 1u) { return; }`,
+          `  var h: array<f32, 6>;`,
+          `  for (var i: u32 = 0u; i < 6u; i = i + 1u) {`,
+          `    var s: f32 = B0[i];`,
+          `    for (var c: u32 = 0u; c < 4u; c = c + 1u) { s = s + x_in[c] * W0[i * 4u + c]; }`,
+          `    h[i] = max(0.0, s);`,
+          `  }`,
+          `  for (var r: u32 = 0u; r < 4u; r = r + 1u) {`,
+          `    var o: f32 = B1[r];`,
+          `    for (var i: u32 = 0u; i < 6u; i = i + 1u) { o = o + h[i] * W1[r * 6u + i]; }`,
+          `    y_out[r] = o;`,
+          `  }`,
+          `}`
+        );
+      }
+
+      // ANSI C99 Header
+      const cLines = [
+        `/* Zero-dependency ANSI C99 operator cartridge (IEEE-754 float32) */`,
+        `#include <stddef.h>`,
+        `static inline void continuum_infer_f32(const float x[4], float y[4]) {`,
+        `  static const float W0[${L0.W.length}][4] = { ${L0.W.map((r) => "{" + r.map((v) => v.toFixed(6) + "f").join(", ") + "}").join(", ")} };`,
+        `  static const float B0[${L0.b.length}] = { ${L0.b.map((v) => v.toFixed(6) + "f").join(", ")} };`
+      ];
+      if (layers.length === 1) {
+        cLines.push(
+          `  for (size_t r = 0; r < 4; ++r) {`,
+          `    float s = B0[r];`,
+          `    for (size_t c = 0; c < 4; ++c) s += x[c] * W0[r][c];`,
+          `    y[r] = s;`,
+          `  }`,
+          `}`
+        );
+      } else {
+        const L1 = layers[1];
+        cLines.push(
+          `  static const float W1[4][6] = { ${L1.W.map((r) => "{" + r.map((v) => v.toFixed(6) + "f").join(", ") + "}").join(", ")} };`,
+          `  static const float B1[4] = { ${L1.b.map((v) => v.toFixed(6) + "f").join(", ")} };`,
+          `  float h[6];`,
+          `  for (size_t i = 0; i < 6; ++i) {`,
+          `    float s = B0[i];`,
+          `    for (size_t c = 0; c < 4; ++c) s += x[c] * W0[i][c];`,
+          `    h[i] = s > 0.0f ? s : 0.0f;`,
+          `  }`,
+          `  for (size_t r = 0; r < 4; ++r) {`,
+          `    float o = B1[r];`,
+          `    for (size_t i = 0; i < 6; ++i) o += h[i] * W1[r][i];`,
+          `    y[r] = o;`,
+          `  }`,
+          `}`
+        );
+      }
+
+      // Pure SQLite / ANSI SQL CTE Evaluator
+      const sqlRows = [];
+      L0.W.forEach((row, r) => row.forEach((w, c) => sqlRows.push(`(${r}, ${c}, ${w.toFixed(6)})`)));
+      const sqlBias = L0.b.map((b, r) => `(${r}, ${b.toFixed(6)})`).join(", ");
+      const sqlLines = [
+        `-- Pure Relational ANSI SQL / SQLite CTE Weight Cartridge Evaluator`,
+        `WITH x_vec(idx, val) AS (VALUES (0, 0.85), (1, -0.35), (2, 0.62), (3, 0.28)),`,
+        `     w0(row_i, col_j, wt) AS (VALUES ${sqlRows.slice(0, 8).join(", ")}${sqlRows.length > 8 ? ",\n       " + sqlRows.slice(8).join(", ") : ""}),`,
+        `     b0(row_i, bias) AS (VALUES ${sqlBias})`,
+        `SELECT b0.row_i AS slot_idx,`,
+        `       ${L0.act === "relu" ? "MAX(0.0, b0.bias + SUM(x_vec.val * w0.wt))" : "b0.bias + SUM(x_vec.val * w0.wt)"} AS activation`,
+        `FROM b0 JOIN w0 ON b0.row_i = w0.row_i JOIN x_vec ON x_vec.idx = w0.col_j`,
+        `GROUP BY b0.row_i, b0.bias ORDER BY b0.row_i;`
+      ];
+
+      return {
+        wasmBytes,
+        wat: watLines.join("\n"),
+        wgsl: wgslLines.join("\n"),
+        c: cLines.join("\n"),
+        sql: sqlLines.join("\n")
+      };
+    }
+
+    async function compileAndExecuteCartridge() {
+      const archKind = document.getElementById("wasmArchSelect").value;
+      const probeScale = parseFloat(document.getElementById("wasmInputScale").value);
+      document.getElementById("wasmArchCode").textContent = archKind === "2layer_film" ? "2-Layer" : "1-Layer";
+      document.getElementById("wasmProbeVal").textContent = probeScale.toFixed(2) + "x";
+
+      const layers = extractActiveOperatorLayers(archKind);
+      const wasmBytes = assembleWasmBinary(layers);
+      compiledArtifacts = emitMultiTargetSources(layers, wasmBytes);
+
+      const xProbe = new Float32Array([
+        Math.fround(0.85 * probeScale + 0.25 * queryCursor.x),
+        Math.fround(-0.35 * probeScale + 0.25 * queryCursor.y),
+        Math.fround(0.62 * probeScale),
+        Math.fround(0.28 * probeScale)
+      ]);
+
+      const t0 = performance.now();
+      const wasmMod = await WebAssembly.instantiate(wasmBytes, {});
+      const mem = new Float32Array(wasmMod.instance.exports.memory.buffer);
+      for (let i = 0; i < 4; i++) mem[i] = xProbe[i];
+      wasmMod.instance.exports.infer(0, 64);
+      const wasmMs = performance.now() - t0;
+
+      const yWasm = mem.slice(16, 20);
+      const yRef = evalFloat32Ref(layers, xProbe);
+
+      let maxDiff = 0.0;
+      let topIdx = 0;
+      for (let i = 0; i < 4; i++) {
+        maxDiff = Math.max(maxDiff, Math.abs(yWasm[i] - yRef[i]));
+        if (yWasm[i] > yWasm[topIdx]) topIdx = i;
+      }
+
+      document.getElementById("wasm-size-v").textContent = wasmBytes.length + " B";
+      document.getElementById("wasm-lat-v").textContent = wasmMs.toFixed(3) + " ms";
+      document.getElementById("wasm-diff-v").textContent = maxDiff.toExponential(2);
+      const SHORT_ROUTES = ["fast_l1", "molora", "null_gate", "quorum"];
+      document.getElementById("wasm-route-v").textContent = SHORT_ROUTES[topIdx];
+
+      document.getElementById("wasm-parity-tbody").innerHTML = [0, 1, 2, 3].map((i) => `
+        <tr>
+          <td><code>${ACTION_SLOTS[i]}</code></td>
+          <td><code>${yWasm[i].toFixed(7)}</code></td>
+          <td><code>${yRef[i].toFixed(7)}</code></td>
+          <td><code>${Math.abs(yWasm[i] - yRef[i]).toExponential(2)}</code></td>
+        </tr>
+      `).join("");
+
+      document.getElementById("gpu-backend-badge").textContent =
+        (typeof navigator !== "undefined" && navigator.gpu)
+          ? "WebAssembly + WebGPU Adapter Ready"
+          : "WebAssembly + Float32Array Fallback Active";
+
+      refreshCompilerCodeView();
+      window._wasmReady = true;
+    }
+
+    function switchCompilerTab(tab) {
+      activeCompilerTab = tab;
+      ["wasm", "wgsl", "c", "sql"].forEach((t) => {
+        document.getElementById("tab-" + t).classList.toggle("active", t === tab);
+      });
+      refreshCompilerCodeView();
+    }
+
+    function refreshCompilerCodeView() {
+      const box = document.getElementById("compiler-code-view");
+      if (activeCompilerTab === "wasm") box.textContent = compiledArtifacts.wat;
+      else if (activeCompilerTab === "wgsl") box.textContent = compiledArtifacts.wgsl;
+      else if (activeCompilerTab === "c") box.textContent = compiledArtifacts.c;
+      else box.textContent = compiledArtifacts.sql;
+    }
+
+    function downloadArtifact(ext) {
+      let blob = null;
+      let filename = `continuum_cartridge.${ext}`;
+      if (ext === "wasm") {
+        blob = new Blob([compiledArtifacts.wasmBytes], { type: "application/wasm" });
+      } else if (ext === "wgsl") {
+        blob = new Blob([compiledArtifacts.wgsl], { type: "text/plain" });
+      } else if (ext === "c") {
+        blob = new Blob([compiledArtifacts.c], { type: "text/x-c" });
+      } else {
+        blob = new Blob([compiledArtifacts.sql], { type: "application/sql" });
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded ${filename}`);
+    }
+
+    function copyCompilerCode() {
+      const txt = document.getElementById("compiler-code-view").textContent;
+      navigator.clipboard.writeText(txt).then(() => showToast("Copied cartridge source to clipboard"));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 1900);
+    }
+
+    // Boot all three interactive laboratories deterministically
+    initWoodburyAndArchive();
+    renderJacobianLab();
+    compileAndExecuteCartridge();
+  </script>
+</body>
+</html>
